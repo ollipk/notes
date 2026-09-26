@@ -147,6 +147,39 @@ export function relativeMajor(key: Key): Key | undefined {
   return { tonic: { letter, accidental }, mode: 'major' };
 }
 
+/** Position of each letter in the order sharps are added to a key signature: F C G D A E B. */
+const sharpOrder = (letter: Letter) => LETTER_FIFTHS[letter] + 1;
+/** Position of each letter in the order flats are added: B E A D G C F. */
+const flatOrder = (letter: Letter) => 5 - LETTER_FIFTHS[letter];
+
+/** The accidental a key signature gives a letter. */
+function signatureAccidental(letter: Letter, fifths: number): Accidental {
+  if (fifths > 0 && sharpOrder(letter) < fifths) return 1;
+  if (fifths < 0 && flatOrder(letter) < -fifths) return -1;
+  return 0;
+}
+
+/**
+ * Spells a pitch class for a key: with the letter of the key's scale when the note is in the
+ * scale, otherwise as a natural if possible, then with sharps in sharp keys (and C) and flats in
+ * flat keys.
+ */
+export function spellPitchClass(pc: number, key: Key): Tonic {
+  const fifths = keySignatureFifths(key);
+  const target = mod12(pc);
+  const matches = (accidental: Accidental) =>
+    LETTERS.map((letter): Tonic => ({ letter, accidental })).find(
+      (tonic) => pitchClass(tonic) === target,
+    );
+  const inScale = LETTERS.map((letter): Tonic => ({
+    letter,
+    accidental: signatureAccidental(letter, fifths),
+  })).find((tonic) => pitchClass(tonic) === target);
+  const spelled = inScale ?? matches(0) ?? matches(fifths < 0 ? -1 : 1);
+  if (spelled === undefined) throw new Error('Every pitch class has a spelling');
+  return spelled;
+}
+
 /** ABC spelling of a key, e.g. `F#m`, `Bbdor`. */
 export function formatAbcKey(key: Key): string {
   const accidental = key.tonic.accidental === 1 ? '#' : key.tonic.accidental === -1 ? 'b' : '';
