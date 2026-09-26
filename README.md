@@ -8,8 +8,9 @@ It is built for phones and tablets at group sessions, and runs as a static site 
 
 **Live:** https://ollipk.github.io/notes/
 
-> Status: early. Open a tune from the list to see its sheet music, transpose it to any key, zoom
-> the notation and play it back at a slower tempo.
+> Status: early. Search for a tune, then read its sheet music, transpose it to any key and play
+> it back at a slower tempo from the bar at the bottom of the screen. The tune page keeps the
+> screen on, has a full-screen mode for reading and prints cleanly on A4 or Letter.
 
 ## Quick start
 

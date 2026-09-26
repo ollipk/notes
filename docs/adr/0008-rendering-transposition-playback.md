@@ -1,6 +1,6 @@
 # 8. Rendering, transposition and playback
 
-Status: Accepted
+Status: Accepted. The page layout is refined by [ADR 9](0009-jam-first-ux.md).
 
 ## Context
 
