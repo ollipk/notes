@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useSearchParams } from 'react-router';
 import { searchTunes } from '../domain/search';
@@ -24,7 +24,10 @@ export function HomeRoute({
   const { t } = useTranslation();
   const navigate = useNavigate();
   const [params, setParams] = useSearchParams();
-  const query = params.get('q') ?? '';
+  // The field keeps what was typed and the URL follows it. Reading the field back from the URL
+  // drops letters typed faster than the router updates. The page mounts again when the player
+  // comes back from a tune, so it starts from the URL then.
+  const [query, setQuery] = useState(() => params.get('q') ?? '');
 
   useEffect(onVisit, [onVisit]);
 
@@ -39,7 +42,10 @@ export function HomeRoute({
       languages={languages}
       tunes={results}
       query={query}
-      onQueryChange={(next) => setParams(next === '' ? {} : { q: next }, { replace: true })}
+      onQueryChange={(next) => {
+        setQuery(next);
+        setParams(next === '' ? {} : { q: next }, { replace: true });
+      }}
       onOpenTune={(id) => navigate(tunePath(id))}
       tuneHref={tuneHref}
     />
