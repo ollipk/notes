@@ -36,13 +36,16 @@ It is a static site on GitHub Pages (https://ollipk.github.io/notes/) with **no 
 | Folder         | May import                                        | Why                                                                      |
 | -------------- | ------------------------------------------------- | ------------------------------------------------------------------------ |
 | `src/domain/`  | only `src/domain/`                                | Pure music logic (transposition, tune model). Portable and fast to test. |
-| `src/ui/`      | `src/domain/`, React, react-i18next, locale types | Presentational components; text via `t()`.                               |
+| `src/ui/`      | `src/domain/`, React, react-i18next, locale types | Presentational components; text via `t()`. abcjs only in `src/ui/abc/`.  |
 | `src/app/`     | `src/domain/`, `src/ui/`                          | Entry point, router, i18n setup, composition.                            |
 | `src/locales/` | —                                                 | `en.json` and other locale files.                                        |
 
 - `src/domain/` must not import react, react-dom, react-router, i18next, `ui/`, `app/`, or use
   browser globals (`window`, `document`, `localStorage`, …; ESLint enforces this).
-- `src/ui/` must not import `src/app/`.
+- `src/ui/` must not import `src/app/`, and does not use the router: `src/app/` passes hrefs and
+  callbacks as props.
+- abcjs is imported only by the adapter `src/ui/abc/abcjsAdapter.ts`, which is loaded lazily
+  with `loadAbc()`. Nothing else may import abcjs or import the adapter statically.
 - No circular dependencies.
 
 ## Internationalization
@@ -75,10 +78,24 @@ It is a static site on GitHub Pages (https://ollipk.github.io/notes/) with **no 
   country of origin and in the contributor's country. Always record the source.
 - **Never** copy from published tune books, websites or other copyrighted editions.
 
+## Rendering and transposition
+
+See ADR 0008.
+
+- Components use the `AbcAdapter` interface (`src/ui/abc/types.ts`), never abcjs directly.
+  Component tests mock `src/ui/abc/loadAbc`, since jsdom cannot render abcjs.
+- **Transposition state lives in the URL**: `/#/tune/<tune-id>?v=<variant-id>&st=<semitones>`
+  (`st` from −12 to 12). Do not copy it into component state or localStorage; read it from the
+  route and update it with `setSearchParams(…, { replace: true })`.
+- Key logic (parsing `K:`, spelling, nearest offset) belongs in `src/domain/key.ts`. The ABC
+  given to abcjs goes through `scoreAbc()` first.
+- Playback must pass `midiTranspose` as well as `visualTranspose`, or it plays the written key.
+- Only per-device preferences (zoom level, language) go into localStorage, wrapped in try/catch.
+
 ## Do not
 
 - Hardcode UI strings.
-- Use browser APIs or framework imports in `src/domain/`, or import abcjs there.
+- Use browser APIs or framework imports in `src/domain/`, or import abcjs outside the adapter.
 - Create, edit or delete any `LICENSE` file (root `LICENSE` is MIT, `tunes/LICENSE` is CC0).
 - Add a Tailwind v3-style config (`tailwind.config.js`, `postcss.config.js`, `@tailwind`).
 - Switch to a browser (history) router or add a backend.

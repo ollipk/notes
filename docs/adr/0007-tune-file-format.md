@@ -41,5 +41,6 @@ and consistent enough to build a catalog and, later, search and filters.
   offline once loaded, but grows with the catalog. **Revisit when the catalog grows past roughly
   1000 variants**, for example by generating a JSON index at build time and loading tune bodies
   on demand.
-- abcjs is a dependency but, for now, only the data test uses it. `src/domain` must not import
-  it (enforced by dependency-cruiser).
+- abcjs is used by the data test and, since [ADR 8](0008-rendering-transposition-playback.md), by
+  the tune page through an adapter in `src/ui/abc/`. `src/domain` must not import it (enforced by
+  dependency-cruiser).
