@@ -11,7 +11,8 @@
     "label": "Search tunes",
     "placeholder": "Search by title, type or region",
     "clear": "Clear search",
-    "noResults": "No tunes match “{{query}}”."
+    "noResults": "No tunes match “{{query}}”.",
+    "chordsBadge": "chords"
   },
   "language": {
     "label": "Language",
@@ -113,5 +114,33 @@
   "print": {
     "action": "Print",
     "address": "Online"
+  },
+  "view": {
+    "title": "View",
+    "button": "View: {{mode}}",
+    "display": {
+      "label": "Show",
+      "notes": "Notes",
+      "notesAndChords": "Notes + chords",
+      "chordChart": "Chord chart"
+    },
+    "playback": {
+      "label": "Play",
+      "melody": "Melody",
+      "melodyAndAccompaniment": "Melody + accompaniment",
+      "accompanimentOnly": "Accompaniment only"
+    },
+    "capoShapes": "Guitar capo shapes",
+    "noChords": "This tune has no chords yet."
+  },
+  "chart": {
+    "label": "Chord chart: {{title}}",
+    "repeatStart": "Repeat from here",
+    "repeatEnd": "Repeat",
+    "ending": "Ending {{number}}",
+    "endingMark": "{{number}}."
+  },
+  "capo": {
+    "banner": "Capo {{capo}} · play {{shape}} shapes"
   }
 }

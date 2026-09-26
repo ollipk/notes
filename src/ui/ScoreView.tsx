@@ -11,7 +11,7 @@ const RESIZE_DELAY_MS = 150;
  * Widest the score gets at scale 1. Phones are narrower, so the score fits their width; on wider
  * screens the zoom changes how wide the score is drawn.
  */
-const MAX_WIDTH_AT_SCALE_1 = 560;
+export const MAX_WIDTH_AT_SCALE_1 = 560;
 /**
  * Layout width for printing, about the printable width of A4 and Letter at 12 mm margins. The
  * printed score is scaled to the exact page width.
@@ -29,9 +29,11 @@ interface ScoreViewProps {
   maximized?: boolean;
 }
 
-const cardClass =
+/** The white "paper" the score and the chord chart are drawn on. */
+export const paperCardClass =
   'score-card mx-auto w-full rounded-xl bg-white p-2 text-black shadow-sm ring-1 ring-stone-300 sm:p-4 dark:ring-stone-600';
-const maximizedClass = 'min-h-full w-full bg-white p-2 text-black sm:p-4';
+/** The paper in focus mode: the whole screen, without the card's frame. */
+export const paperMaximizedClass = 'min-h-full w-full bg-white p-2 text-black sm:p-4';
 
 /** The sheet music, on a white "paper" card in light and dark mode so black notation stays readable. */
 export function ScoreView({
@@ -91,7 +93,7 @@ export function ScoreView({
   return (
     <div
       style={maximized ? undefined : { maxWidth: MAX_WIDTH_AT_SCALE_1 * scale }}
-      className={maximized ? maximizedClass : cardClass}
+      className={maximized ? paperMaximizedClass : paperCardClass}
     >
       {abc.status === 'loading' && <p className="p-4 text-stone-700">{t('score.loading')}</p>}
       {abc.status === 'error' && (

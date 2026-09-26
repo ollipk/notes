@@ -102,3 +102,28 @@ export const PrintIcon = () => (
     <path d="M7 14h10v6H7z" />
   </Icon>
 );
+
+/** Display mode "notes": a single note. */
+export const NotesIcon = () => (
+  <Icon>
+    <ellipse cx="9" cy="17" rx="3.5" ry="2.5" fill="currentColor" />
+    <path d="M12.5 17V4l6 2.5" />
+  </Icon>
+);
+
+/** Display mode "notes and chords": a note with a chord symbol above. */
+export const NotesChordsIcon = () => (
+  <Icon>
+    <ellipse cx="8" cy="18.5" rx="3" ry="2" fill="currentColor" />
+    <path d="M11 18.5V10" />
+    <path d="M20 4.5a3 3 0 1 0 0 5" />
+  </Icon>
+);
+
+/** Display mode "chord chart": a grid of bars. */
+export const ChordChartIcon = () => (
+  <Icon>
+    <rect x="3" y="5" width="18" height="14" rx="1.5" />
+    <path d="M9 5v14M15 5v14M3 12h18" />
+  </Icon>
+);

@@ -1,5 +1,6 @@
 import { useId } from 'react';
 import { useTranslation } from 'react-i18next';
+import { tuneHasChords } from '../domain/chordSymbols';
 import type { Tune, TuneId } from '../domain/tune';
 import { countryName } from './TuneMeta';
 
@@ -18,7 +19,8 @@ export function TuneList({ tunes, tuneHref }: TuneListProps) {
         {t('catalog.heading')}
       </h2>
       <ul className="flex flex-col divide-y divide-stone-200 dark:divide-stone-800">
-        {tunes.map(({ id, variants }) => {
+        {tunes.map((tune) => {
+          const { id, variants } = tune;
           const [first] = variants;
           return (
             <li key={id}>
@@ -29,12 +31,17 @@ export function TuneList({ tunes, tuneHref }: TuneListProps) {
                 <span className="text-lg font-semibold text-amber-800 dark:text-amber-400">
                   {first.titles[0]}
                 </span>
-                <span className="text-stone-700 dark:text-stone-300">
+                <span className="flex flex-wrap items-center gap-x-2 text-stone-700 dark:text-stone-300">
                   {t('catalog.summary', {
                     type: t(`tuneType.${first.type}`),
                     country: countryName(first.origin.country, i18n.resolvedLanguage),
                     count: variants.length,
                   })}
+                  {tuneHasChords(tune) && (
+                    <span className="rounded-full border border-stone-400 px-2 text-sm leading-5 dark:border-stone-500">
+                      {t('search.chordsBadge')}
+                    </span>
+                  )}
                 </span>
               </a>
             </li>

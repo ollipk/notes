@@ -5,6 +5,8 @@ import { scoreAbc } from '../domain/scoreAbc';
 import type { Tune, TuneVariant, VariantId } from '../domain/tune';
 import { useAbcAdapter } from './abc/useAbcAdapter';
 import { BottomBar } from './BottomBar';
+import { CapoBanner } from './CapoBanner';
+import { ChordChart } from './ChordChart';
 import { BackIcon, ExitFullScreenIcon, FullScreenIcon, PrintIcon } from './icons';
 import { ScoreView } from './ScoreView';
 import { Sheet } from './Sheet';
@@ -15,14 +17,17 @@ import { TuneDetails } from './TuneDetails';
 import { TuneMeta, useOriginText } from './TuneMeta';
 import { useFocusMode } from './useFocusMode';
 import { usePlayerSettings } from './PlayerSettings';
+import { useChordView } from './useChordView';
 import { useWakeLock } from './useWakeLock';
 import { usePlayer } from './usePlayer';
 import { useZoom } from './useZoom';
 import { VariantSelect } from './VariantSelect';
+import { ViewControls } from './ViewControls';
 import { ZoomControls } from './ZoomControls';
 
 /** Focus mode: the score card fills the screen (ADR 9). */
-const focusModeClass = 'fixed inset-0 z-50 overflow-y-auto bg-white';
+const focusModeClass = 'fixed inset-0 z-50 flex flex-col gap-2 overflow-y-auto bg-white';
+const scoreAreaClass = 'flex flex-col gap-2';
 
 interface TunePageProps {
   tune: Tune;
@@ -52,10 +57,11 @@ export function TunePage({
   const { t, i18n } = useTranslation();
   const abc = useAbcAdapter();
   const zoom = useZoom();
-  const { settings } = usePlayerSettings();
+  const { settings, update: updateSettings } = usePlayerSettings();
   const [tempo, setTempo] = useState(100);
-  const [sheetOpen, setSheetOpen] = useState(false);
+  const [openSheet, setOpenSheet] = useState<'more' | 'view'>();
   const moreButton = useRef<HTMLButtonElement>(null);
+  const viewButton = useRef<HTMLButtonElement>(null);
   const focusMode = useFocusMode();
   const keyLine = useKeyLine();
   const originText = useOriginText();
@@ -70,19 +76,29 @@ export function TunePage({
     alternateTitles,
   );
 
+  const adapter = abc.status === 'ready' ? abc.adapter : undefined;
+  const chords = useChordView({
+    variant,
+    source,
+    writtenKey: writtenKey.ok ? writtenKey.value : undefined,
+    semitones: shownSemitones,
+    settings,
+    adapter,
+  });
+
   const player = usePlayer({
-    adapter: abc.status === 'ready' ? abc.adapter : undefined,
+    adapter,
     abc: source,
     semitones: shownSemitones,
-    playback: settings.playbackMode,
+    playback: chords.playback,
     tempo,
-    resetKey: [tune.id, variant.variantId, shownSemitones, settings.playbackMode].join('/'),
+    resetKey: [tune.id, variant.variantId, shownSemitones, chords.playback].join('/'),
   });
 
   const closeSheet = useCallback(() => {
-    setSheetOpen(false);
-    moreButton.current?.focus();
-  }, []);
+    setOpenSheet(undefined);
+    (openSheet === 'view' ? viewButton : moreButton).current?.focus();
+  }, [openSheet]);
 
   return (
     <main className="mx-auto flex min-h-dvh w-full max-w-3xl flex-col gap-3 px-2 pt-1 pb-[calc(6rem+env(safe-area-inset-bottom))] sm:px-6">
@@ -117,15 +133,31 @@ export function TunePage({
         </div>
       )}
 
-      <div className={focusMode.active ? focusModeClass : undefined}>
-        <ScoreView
-          abc={abc}
-          source={source}
-          title={title}
-          semitones={shownSemitones}
-          scale={zoom.scale}
-          maximized={focusMode.active}
-        />
+      <div className={focusMode.active ? focusModeClass : scoreAreaClass}>
+        {!chords.hasChords && settings.displayMode === 'chordChart' && (
+          <p role="status" className="px-2 text-stone-700 dark:text-stone-300 print:hidden">
+            {t('view.noChords')}
+          </p>
+        )}
+        {chords.capo && <CapoBanner suggestion={chords.capo} />}
+        {chords.chart ? (
+          <ChordChart
+            chart={chords.chart}
+            title={title}
+            displayChord={chords.displayChord}
+            scale={zoom.scale}
+            maximized={focusMode.active}
+          />
+        ) : (
+          <ScoreView
+            abc={abc}
+            source={chords.scoreSource}
+            title={title}
+            semitones={shownSemitones}
+            scale={zoom.scale}
+            maximized={focusMode.active}
+          />
+        )}
         {focusMode.active && (
           <button
             type="button"
@@ -168,11 +200,24 @@ export function TunePage({
           onPlay={player.play}
           onPause={player.pause}
           moreButton={moreButton}
-          onMore={() => setSheetOpen(true)}
+          onMore={() => setOpenSheet('more')}
+          displayMode={chords.displayMode}
+          viewButton={viewButton}
+          onView={() => setOpenSheet('view')}
         />
       )}
 
-      {sheetOpen && (
+      {openSheet === 'view' && (
+        <Sheet label={t('view.title')} onClose={closeSheet}>
+          <ViewControls
+            settings={settings}
+            onChange={updateSettings}
+            hasChords={chords.hasChords}
+          />
+        </Sheet>
+      )}
+
+      {openSheet === 'more' && (
         <Sheet label={t('tune.more')} onClose={closeSheet}>
           {tune.variants.length > 1 && (
             <VariantSelect
@@ -221,7 +266,7 @@ export function TunePage({
             <button
               type="button"
               onClick={() => {
-                setSheetOpen(false);
+                setOpenSheet(undefined);
                 focusMode.enter();
               }}
               className={textButtonClass}
