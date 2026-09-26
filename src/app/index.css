@@ -1,0 +1,11 @@
+@import 'tailwindcss';
+
+@layer base {
+  :root {
+    color-scheme: light dark;
+  }
+
+  body {
+    @apply bg-stone-50 text-stone-900 antialiased dark:bg-stone-900 dark:text-stone-100;
+  }
+}
