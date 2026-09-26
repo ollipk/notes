@@ -20,10 +20,10 @@ module.exports = {
       name: 'domain-no-frameworks',
       severity: 'error',
       comment:
-        'src/domain must not import React, the router or i18n, so it stays portable and testable.',
+        'src/domain must not import React, the router, i18n or abcjs, so it stays portable and testable.',
       from: { path: '^src/domain/' },
       to: {
-        path: '(^|/)node_modules/(react|react-dom|react-router|i18next|react-i18next|i18next-browser-languagedetector)/',
+        path: '(^|/)node_modules/(react|react-dom|react-router|i18next|react-i18next|i18next-browser-languagedetector|abcjs)/',
       },
     },
     {
