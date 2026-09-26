@@ -1,11 +1,14 @@
 import { useTranslation } from 'react-i18next';
+import type { Tune } from '../domain/tune';
 import { LanguageSelect, type LanguageCode } from './LanguageSelect';
+import { TuneList } from './TuneList';
 
 interface HomePageProps {
   languages: readonly LanguageCode[];
+  tunes: readonly Tune[];
 }
 
-export function HomePage({ languages }: HomePageProps) {
+export function HomePage({ languages, tunes }: HomePageProps) {
   const { t } = useTranslation();
 
   return (
@@ -14,9 +17,7 @@ export function HomePage({ languages }: HomePageProps) {
         <h1 className="text-4xl font-bold tracking-tight">{t('app.name')}</h1>
         <LanguageSelect languages={languages} />
       </header>
-      <p className="text-lg leading-relaxed text-stone-700 dark:text-stone-300">
-        {t('home.comingSoon')}
-      </p>
+      <TuneList tunes={tunes} />
     </main>
   );
 }
