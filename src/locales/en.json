@@ -7,6 +7,12 @@
     "summary_one": "{{type}} · {{country}} · {{count}} variant",
     "summary_other": "{{type}} · {{country}} · {{count}} variants"
   },
+  "search": {
+    "label": "Search tunes",
+    "placeholder": "Search by title, type or region",
+    "clear": "Clear search",
+    "noResults": "No tunes match “{{query}}”."
+  },
   "language": {
     "label": "Language",
     "names": {

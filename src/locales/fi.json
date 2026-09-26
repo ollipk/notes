@@ -7,6 +7,12 @@
     "summary_one": "{{type}} · {{country}} · {{count}} versio",
     "summary_other": "{{type}} · {{country}} · {{count}} versiota"
   },
+  "search": {
+    "label": "Hae sävelmiä",
+    "placeholder": "Hae nimellä, lajilla tai alueella",
+    "clear": "Tyhjennä haku",
+    "noResults": "Hakua ”{{query}}” vastaavia sävelmiä ei löytynyt."
+  },
   "language": {
     "label": "Kieli",
     "names": {
