@@ -10,5 +10,7 @@ N: Often attributed to Henry VIII, but the composer is unknown. First printed in
 M: 6/8
 L: 1/8
 K: Am
-A|c2d e>fe|d2B G>AB|c2A A>^GA|B2^G E2A|c2d e>fe|d2B G>AB|c>BA ^G>^FG|A3 A2||
-g|g3 g>^fe|d2B G>AB|c2A A>^GA|B2^G E2g|g3 g>^fe|d2B G>AB|c>BA ^G>^FG|A3 A2|]
+P:A
+A|"Am"c2d "G"e>fe|"G"d2B "Em"G>AB|"Am"c2A "F"A>^GA|"E"B2^G E2A|"Am"c2d e>fe|"G"d2B G>AB|"Am"c>BA "E"^G>^FG|"Am"A3 A2||
+P:B
+g|"C"g3 g>^fe|"G"d2B G>AB|"Am"c2A "F"A>^GA|"E"B2^G E2g|"C"g3 g>^fe|"G"d2B G>AB|"Am"c>BA "E"^G>^FG|"Am"A3 A2|]
