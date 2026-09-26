@@ -1,0 +1,15 @@
+{
+  "app": {
+    "name": "Notes"
+  },
+  "home": {
+    "comingSoon": "Tulossa: kansanmusiikin nuotit ja transponointi"
+  },
+  "language": {
+    "label": "Kieli",
+    "names": {
+      "en": "English",
+      "fi": "Suomi"
+    }
+  }
+}

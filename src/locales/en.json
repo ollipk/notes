@@ -1,0 +1,15 @@
+{
+  "app": {
+    "name": "Notes"
+  },
+  "home": {
+    "comingSoon": "Coming soon: folk tune sheet music and transposition"
+  },
+  "language": {
+    "label": "Language",
+    "names": {
+      "en": "English",
+      "fi": "Suomi"
+    }
+  }
+}
