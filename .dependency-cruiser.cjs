@@ -41,6 +41,22 @@ module.exports = {
       to: { path: '^src/app/' },
     },
     {
+      name: 'abcjs-only-in-adapter',
+      severity: 'error',
+      comment:
+        'abcjs is used only through the adapter in src/ui/abc/, so components depend on a small interface and tests can replace it (ADR 8).',
+      from: { path: '^src/', pathNot: '^src/ui/abc/' },
+      to: { path: '(^|/)node_modules/abcjs/' },
+    },
+    {
+      name: 'abcjs-adapter-lazy',
+      severity: 'error',
+      comment:
+        'Load the abcjs adapter with loadAbc() (a dynamic import), so abcjs stays out of the home page bundle (ADR 8).',
+      from: { path: '^src/', pathNot: '^src/ui/abc/' },
+      to: { path: '^src/ui/abc/abcjsAdapter', dynamic: false },
+    },
+    {
       name: 'not-to-unresolvable',
       severity: 'error',
       comment: 'Every import must resolve.',

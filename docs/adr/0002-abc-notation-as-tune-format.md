@@ -1,6 +1,7 @@
 # 2. ABC notation as the tune format
 
-Status: Accepted (file layout and validation refined by [ADR 7](0007-tune-file-format.md))
+Status: Accepted (file layout and validation refined by [ADR 7](0007-tune-file-format.md);
+rendering described in [ADR 8](0008-rendering-transposition-playback.md))
 
 ## Context
 

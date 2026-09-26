@@ -34,5 +34,62 @@
     "air": "Air",
     "song": "Song",
     "other": "Other"
+  },
+  "tune": {
+    "back": "← All tunes",
+    "alsoKnownAs": "Also known as {{titles}}",
+    "composer": "Composer: {{composer}}",
+    "origin": "{{country}}, {{region}}",
+    "details": "About this transcription",
+    "source": "Source",
+    "transcriber": "Transcriber",
+    "notes": "Notes"
+  },
+  "variant": {
+    "label": "Variant"
+  },
+  "key": {
+    "name": "{{tonic}} {{mode}}",
+    "mode": {
+      "major": "major",
+      "minor": "minor",
+      "dorian": "dorian",
+      "mixolydian": "mixolydian",
+      "lydian": "lydian",
+      "phrygian": "phrygian",
+      "locrian": "locrian"
+    }
+  },
+  "transpose": {
+    "label": "Key",
+    "current": "Key: {{key}}",
+    "currentShifted": "Key: {{key}} ({{offset}})",
+    "down": "Down a semitone",
+    "up": "Up a semitone",
+    "reset": "Back to the written key"
+  },
+  "zoom": {
+    "label": "Notation size",
+    "out": "Smaller notation",
+    "in": "Larger notation"
+  },
+  "player": {
+    "label": "Playback",
+    "play": "Play",
+    "pause": "Pause",
+    "restart": "Back to the start",
+    "tempo": "Tempo",
+    "loading": "Loading sound…",
+    "error": "Sound could not be started on this device. The sheet music still works."
+  },
+  "score": {
+    "label": "Sheet music: {{title}}",
+    "loading": "Loading sheet music…",
+    "error": "The sheet music could not be loaded. Check your connection and reload the page."
+  },
+  "notFound": {
+    "heading": "Tune not found",
+    "message": "There is no tune at this address. It may have been renamed or removed.",
+    "back": "Back to all tunes"
   }
 }

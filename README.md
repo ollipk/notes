@@ -8,7 +8,8 @@ It is built for phones and tablets at group sessions, and runs as a static site 
 
 **Live:** https://ollipk.github.io/notes/
 
-> Status: early. The app lists the tune catalog; rendering and transposition are coming.
+> Status: early. Open a tune from the list to see its sheet music, transpose it to any key, zoom
+> the notation and play it back at a slower tempo.
 
 ## Quick start
 
@@ -31,6 +32,7 @@ Other scripts: `build`, `preview`, `lint`, `format`, `format:check`, `typecheck`
 src/
   domain/    Pure TypeScript domain types and logic. No React, router, i18n or browser APIs.
   ui/        React components. May import domain/. All text via i18n.
+  ui/abc/    The only code that uses abcjs (sheet music, playback), loaded lazily.
   app/       Entry point, router, i18n initialization, composition.
   locales/   en.json (source of truth), fi.json
 tests/       Tests that check files outside src/ (tune data validation)

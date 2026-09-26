@@ -34,5 +34,62 @@
     "air": "Hidas sävelmä",
     "song": "Laulu",
     "other": "Muu"
+  },
+  "tune": {
+    "back": "← Kaikki sävelmät",
+    "alsoKnownAs": "Tunnetaan myös nimellä {{titles}}",
+    "composer": "Säveltäjä: {{composer}}",
+    "origin": "{{country}}, {{region}}",
+    "details": "Tietoa nuotinnoksesta",
+    "source": "Lähde",
+    "transcriber": "Nuotintaja",
+    "notes": "Huomautukset"
+  },
+  "variant": {
+    "label": "Versio"
+  },
+  "key": {
+    "name": "{{tonic}}-{{mode}}",
+    "mode": {
+      "major": "duuri",
+      "minor": "molli",
+      "dorian": "doorinen",
+      "mixolydian": "miksolyydinen",
+      "lydian": "lyydinen",
+      "phrygian": "fryyginen",
+      "locrian": "lokrinen"
+    }
+  },
+  "transpose": {
+    "label": "Sävellaji",
+    "current": "Sävellaji: {{key}}",
+    "currentShifted": "Sävellaji: {{key}} ({{offset}})",
+    "down": "Puolisävel alas",
+    "up": "Puolisävel ylös",
+    "reset": "Palauta kirjoitettu sävellaji"
+  },
+  "zoom": {
+    "label": "Nuottien koko",
+    "out": "Pienennä nuotteja",
+    "in": "Suurenna nuotteja"
+  },
+  "player": {
+    "label": "Soitto",
+    "play": "Soita",
+    "pause": "Tauko",
+    "restart": "Alkuun",
+    "tempo": "Tempo",
+    "loading": "Ladataan ääntä…",
+    "error": "Ääntä ei voitu käynnistää tällä laitteella. Nuotit toimivat silti."
+  },
+  "score": {
+    "label": "Nuotit: {{title}}",
+    "loading": "Ladataan nuotteja…",
+    "error": "Nuotteja ei voitu ladata. Tarkista verkkoyhteys ja lataa sivu uudelleen."
+  },
+  "notFound": {
+    "heading": "Sävelmää ei löytynyt",
+    "message": "Tässä osoitteessa ei ole sävelmää. Se on ehkä nimetty uudelleen tai poistettu.",
+    "back": "Takaisin sävelmiin"
   }
 }
