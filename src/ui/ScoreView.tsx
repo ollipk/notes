@@ -13,6 +13,11 @@ const RESIZE_DELAY_MS = 150;
  * screens the zoom changes how wide the score is drawn.
  */
 const MAX_WIDTH_AT_SCALE_1 = 560;
+/**
+ * Layout width for printing, about the printable width of A4 and Letter at 12 mm margins. The
+ * printed score is scaled to the exact page width.
+ */
+const PRINT_WIDTH = 700;
 
 interface ScoreViewProps {
   abc: AbcAdapterState;
@@ -27,7 +32,7 @@ interface ScoreViewProps {
 }
 
 const cardClass =
-  'mx-auto w-full rounded-xl bg-white p-2 text-black shadow-sm ring-1 ring-stone-300 sm:p-4 dark:ring-stone-600';
+  'score-card mx-auto w-full rounded-xl bg-white p-2 text-black shadow-sm ring-1 ring-stone-300 sm:p-4 dark:ring-stone-600';
 const maximizedClass = 'min-h-full w-full bg-white p-2 text-black sm:p-4';
 
 /** The sheet music, on a white "paper" card in light and dark mode so black notation stays readable. */
@@ -69,6 +74,21 @@ export function ScoreView({
     const available = width || element.clientWidth || FALLBACK_WIDTH;
     renderedWidth.current = available;
     onRender(adapter.renderScore(element, source, { semitones, scale, width: available }));
+
+    // Print the same key and variant at the same size on every device: lay the score out for
+    // the printed page, not for the phone it was opened on, and restore it afterwards.
+    const renderForPrint = () => {
+      adapter.renderScore(element, source, { semitones, scale: 1, width: PRINT_WIDTH });
+    };
+    const renderForScreen = () => {
+      onRender(adapter.renderScore(element, source, { semitones, scale, width: available }));
+    };
+    window.addEventListener('beforeprint', renderForPrint);
+    window.addEventListener('afterprint', renderForScreen);
+    return () => {
+      window.removeEventListener('beforeprint', renderForPrint);
+      window.removeEventListener('afterprint', renderForScreen);
+    };
   }, [adapter, source, semitones, scale, width, onRender]);
 
   return (

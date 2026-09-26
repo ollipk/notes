@@ -6,14 +6,14 @@ import type { Tune, TuneVariant, VariantId } from '../domain/tune';
 import type { Score } from './abc/types';
 import { useAbcAdapter } from './abc/useAbcAdapter';
 import { BottomBar } from './BottomBar';
-import { BackIcon, ExitFullScreenIcon, FullScreenIcon } from './icons';
+import { BackIcon, ExitFullScreenIcon, FullScreenIcon, PrintIcon } from './icons';
 import { ScoreView } from './ScoreView';
 import { Sheet } from './Sheet';
 import { labelClass, plainIconButtonClass, textButtonClass } from './styles';
 import { TempoControls } from './TempoControls';
-import { KeyPicker, KeyStepper } from './TranspositionControls';
+import { KeyPicker, KeyStepper, useKeyLine } from './TranspositionControls';
 import { TuneDetails } from './TuneDetails';
-import { TuneMeta } from './TuneMeta';
+import { TuneMeta, useOriginText } from './TuneMeta';
 import { useFocusMode } from './useFocusMode';
 import { useWakeLock } from './useWakeLock';
 import { usePlayer } from './usePlayer';
@@ -57,6 +57,8 @@ export function TunePage({
   const [sheetOpen, setSheetOpen] = useState(false);
   const moreButton = useRef<HTMLButtonElement>(null);
   const focusMode = useFocusMode();
+  const keyLine = useKeyLine();
+  const originText = useOriginText();
   // The score must stay readable while playing, without touching the screen.
   useWakeLock();
 
@@ -84,7 +86,7 @@ export function TunePage({
   return (
     <main className="mx-auto flex min-h-dvh w-full max-w-3xl flex-col gap-3 px-2 pt-1 pb-[calc(6rem+env(safe-area-inset-bottom))] sm:px-6">
       {!focusMode.active && (
-        <header className="flex min-w-0 items-center gap-1">
+        <header className="flex min-w-0 items-center gap-1 print:hidden">
           <a
             href={homeHref}
             aria-label={t('tune.back')}
@@ -98,6 +100,20 @@ export function TunePage({
           </a>
           <h1 className="min-w-0 truncate text-xl font-bold tracking-tight">{title}</h1>
         </header>
+      )}
+
+      {!focusMode.active && (
+        <div className="hidden flex-col gap-1 print:flex">
+          <p className="text-2xl font-bold">{title}</p>
+          {alternateTitles.length > 0 && <p>{t('tune.alsoKnownAs', { titles: alternates })}</p>}
+          <p>
+            {[
+              t(`tuneType.${variant.type}`),
+              originText(variant),
+              ...(writtenKey.ok ? [keyLine(writtenKey.value, shownSemitones)] : []),
+            ].join(' · ')}
+          </p>
+        </div>
       )}
 
       <div className={focusMode.active ? focusModeClass : undefined}>
@@ -124,7 +140,7 @@ export function TunePage({
 
       {!focusMode.active && (
         <div className="flex flex-col gap-4 px-2 pt-2">
-          <div className="flex flex-col gap-1">
+          <div className="flex flex-col gap-1 print:hidden">
             {alternateTitles.length > 0 && (
               <p className="text-lg text-stone-700 dark:text-stone-300">
                 {t('tune.alsoKnownAs', { titles: alternates })}
@@ -132,7 +148,7 @@ export function TunePage({
             )}
             <TuneMeta variant={variant} />
           </div>
-          <TuneDetails variant={variant} />
+          <TuneDetails variant={variant} pageUrl={window.location.href} />
         </div>
       )}
 
@@ -191,6 +207,17 @@ export function TunePage({
             onRestart={player.restart}
           />
           <div className="flex flex-wrap gap-2">
+            <button
+              type="button"
+              onClick={() => {
+                closeSheet();
+                window.print();
+              }}
+              className={textButtonClass}
+            >
+              <PrintIcon />
+              {t('print.action')}
+            </button>
             <button
               type="button"
               onClick={() => {

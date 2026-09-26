@@ -109,5 +109,9 @@
   "focus": {
     "enter": "Full screen",
     "exit": "Exit full screen"
+  },
+  "print": {
+    "action": "Print",
+    "address": "Online"
   }
 }

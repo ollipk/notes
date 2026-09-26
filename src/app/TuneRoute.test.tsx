@@ -90,7 +90,12 @@ describe('tune page', () => {
     const details = screen.getByRole('region', { name: en.tune.details });
     expect(header.compareDocumentPosition(score)).toBe(Node.DOCUMENT_POSITION_FOLLOWING);
     expect(score.compareDocumentPosition(details)).toBe(Node.DOCUMENT_POSITION_FOLLOWING);
-    expect(screen.getByText('Also known as The Kesh Jig')).toBeInTheDocument();
+    // Shown below the score; the other copy is the print-only title block.
+    const alternates = screen.getAllByText('Also known as The Kesh Jig');
+    expect(alternates).toHaveLength(2);
+    expect(score.compareDocumentPosition(alternates[1] as Node)).toBe(
+      Node.DOCUMENT_POSITION_FOLLOWING,
+    );
 
     expect(within(bar()).getByRole('button', { name: en.transpose.down })).toBeInTheDocument();
     expect(within(bar()).getByRole('button', { name: en.transpose.up })).toBeInTheDocument();
@@ -447,5 +452,50 @@ describe('screen wake lock', () => {
     expect('wakeLock' in navigator).toBe(false);
     open('#/tune/the-kesh');
     expect(screen.getByRole('heading', { level: 1, name: 'The Kesh' })).toBeInTheDocument();
+  });
+});
+
+describe('print', () => {
+  beforeEach(async () => {
+    await act(() => i18n.changeLanguage('en'));
+    fake.adapter.renderScore.mockReturnValue({} as Score);
+  });
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
+  it('prints from the More sheet', () => {
+    const print = vi.spyOn(window, 'print').mockImplementation(() => {});
+    open('#/tune/the-kesh?st=2');
+    openMore();
+
+    fireEvent.click(within(sheet()).getByRole('button', { name: en.print.action }));
+
+    expect(print).toHaveBeenCalledTimes(1);
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+  });
+
+  it('lays the score out for the printed page, then back for the screen', async () => {
+    open('#/tune/the-kesh?st=2');
+    await waitFor(() => expect(fake.adapter.renderScore).toHaveBeenCalled());
+    const renders = () => fake.adapter.renderScore.mock.calls.map(([, , options]) => options);
+    const screenLayout = renders().at(-1);
+
+    act(() => window.dispatchEvent(new Event('beforeprint')));
+    expect(renders().at(-1)).toEqual({ semitones: 2, scale: 1, width: 700 });
+
+    act(() => window.dispatchEvent(new Event('afterprint')));
+    expect(renders().at(-1)).toEqual(screenLayout);
+  });
+
+  it('has a print-only title, a meta line with the displayed key, and the address', () => {
+    open('#/tune/the-kesh?st=2');
+
+    const printBlock = screen.getByText('Jig · Ireland · Key: A major (+2)').parentElement;
+    expect(printBlock).toHaveClass('hidden', 'print:flex');
+    expect(printBlock).toHaveTextContent(/^The KeshAlso known as The Kesh Jig/);
+    const address = screen.getByText(window.location.href);
+    expect(address).toHaveClass('hidden', 'print:block');
+    expect(address.textContent).toMatch(/#\/tune\/the-kesh\?st=2$/);
   });
 });

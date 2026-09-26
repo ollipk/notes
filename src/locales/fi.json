@@ -109,5 +109,9 @@
   "focus": {
     "enter": "Koko näyttö",
     "exit": "Poistu koko näytöstä"
+  },
+  "print": {
+    "action": "Tulosta",
+    "address": "Verkossa"
   }
 }
