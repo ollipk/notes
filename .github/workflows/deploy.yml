@@ -25,10 +25,11 @@ jobs:
           node-version-file: .nvmrc
           cache: npm
       - run: npm ci
+      # The root build script delegates to the @notes/web workspace.
       - run: npm run build
       - uses: actions/upload-pages-artifact@v5
         with:
-          path: dist
+          path: apps/web/dist
 
   deploy:
     needs: build

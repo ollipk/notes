@@ -22,7 +22,7 @@ npm run check
 ```
 
 It runs format:check, lint, typecheck, test, depcheck and build in that order and must pass
-locally and in CI. New user-visible text goes into `src/locales/en.json` **and every other
+locally and in CI. New user-visible text goes into `apps/web/src/locales/en.json` **and every other
 locale** in the same PR.
 
 ## AI-assisted contributions

@@ -1,0 +1,10 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.tsbuildinfo",
+    // No DOM and no Node types: the domain runs anywhere (ADR 11).
+    "lib": ["ES2023"],
+    "types": []
+  },
+  "include": ["src"]
+}

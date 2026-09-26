@@ -4,7 +4,7 @@ This folder holds the tune data: folk tunes in [ABC notation](https://abcnotatio
 here is dedicated to the public domain under [CC0 1.0](LICENSE), separately from the MIT-licensed
 code.
 
-`npm run check` validates every file here (`tests/tune-data.test.ts`) and lists all problems at
+`npm run check` validates every file here (`apps/web/tests/tune-data.test.ts`) and lists all problems at
 once, with file and line.
 
 ## Layout
@@ -56,13 +56,13 @@ the check parses it with [abcjs](https://www.abcjs.net/) and reports its warning
 ### Tune types
 
 `R:` takes one ID from the controlled vocabulary in
-[`src/domain/tuneType.ts`](../src/domain/tuneType.ts):
+[`packages/domain/src/tuneType.ts`](../packages/domain/src/tuneType.ts):
 
 `polska`, `waltz`, `schottische`, `mazurka`, `polka`, `hambo`, `march`, `minuet`, `quadrille`,
 `halling`, `springar`, `pols`, `reel`, `jig`, `slip-jig`, `hornpipe`, `air`, `song`, `other`
 
 Use `other` if none fits. To add a type, open a PR that extends the list and adds a
-`tuneType.<id>` label to every file in `src/locales/`.
+`tuneType.<id>` label to every file in `apps/web/src/locales/`.
 
 ### Example
 

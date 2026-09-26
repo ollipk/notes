@@ -4,7 +4,7 @@ import reactHooks from 'eslint-plugin-react-hooks';
 import { defineConfig, globalIgnores } from 'eslint/config';
 import tseslint from 'typescript-eslint';
 
-// Browser globals that must never be used in src/domain (pure, framework-free logic).
+// Browser and Node globals that must never be used in packages/domain (pure, portable logic).
 // dependency-cruiser checks imports; this rule covers globals, which it cannot see.
 const browserGlobals = [
   'window',
@@ -25,10 +25,17 @@ const browserGlobals = [
   'Element',
   'Node',
   'Event',
+  'process',
+  'Buffer',
+  'require',
+  'module',
+  '__dirname',
+  '__filename',
+  'global',
 ];
 
 export default defineConfig([
-  globalIgnores(['dist', 'coverage']),
+  globalIgnores(['**/dist', '**/coverage']),
   {
     files: ['**/*.{ts,tsx}'],
     extends: [
@@ -39,40 +46,40 @@ export default defineConfig([
     ],
   },
   {
-    files: ['src/domain/**/*.ts'],
+    files: ['packages/domain/src/**/*.ts'],
     rules: {
       'no-restricted-globals': [
         'error',
         ...browserGlobals.map((name) => ({
           name,
-          message: 'src/domain must stay free of browser APIs.',
+          message: 'packages/domain must stay free of browser and Node APIs.',
         })),
       ],
     },
   },
   {
     // All user-visible text comes from locale files via i18n.
-    files: ['src/ui/**/*.tsx', 'src/app/**/*.tsx'],
+    files: ['apps/web/src/ui/**/*.tsx', 'apps/web/src/app/**/*.tsx'],
     ignores: ['**/*.test.tsx'],
     rules: {
       'no-restricted-syntax': [
         'error',
         {
           selector: 'JSXText[value=/\\S/]',
-          message: 'No hardcoded UI text. Use t() with a key from src/locales/en.json.',
+          message: 'No hardcoded UI text. Use t() with a key from apps/web/src/locales/en.json.',
         },
         {
           selector: 'JSXExpressionContainer > Literal[value=/\\S/]',
-          message: 'No hardcoded UI text. Use t() with a key from src/locales/en.json.',
+          message: 'No hardcoded UI text. Use t() with a key from apps/web/src/locales/en.json.',
         },
         {
           selector: 'JSXExpressionContainer > TemplateLiteral',
-          message: 'No hardcoded UI text. Use t() with a key from src/locales/en.json.',
+          message: 'No hardcoded UI text. Use t() with a key from apps/web/src/locales/en.json.',
         },
         {
           selector:
             'JSXAttribute[name.name=/^(alt|title|placeholder|aria-label|aria-description)$/] > Literal',
-          message: 'No hardcoded UI text. Use t() with a key from src/locales/en.json.',
+          message: 'No hardcoded UI text. Use t() with a key from apps/web/src/locales/en.json.',
         },
       ],
     },

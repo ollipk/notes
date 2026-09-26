@@ -19,28 +19,34 @@ It is built for phones and tablets at group sessions, and runs as a static site 
 Requires Node 24 (see `.nvmrc`; with nvm run `nvm use`).
 
 ```sh
-npm ci          # install exact dependencies from package-lock.json
-npm run dev     # start the dev server
-npm run check   # format:check, lint, typecheck, test, depcheck, build
+npm ci          # install exact dependencies for every workspace from package-lock.json
+npm run dev     # start the web app's dev server
+npm run build   # build the web app into apps/web/dist
+npm run check   # format:check, lint, typecheck, test, depcheck, build (all workspaces)
 ```
 
 `npm run check` is the definition of done; CI runs the same command.
 
-Other scripts: `build`, `preview`, `lint`, `format`, `format:check`, `typecheck`, `test`,
-`depcheck`.
+Other root scripts: `preview`, `lint`, `format`, `format:check`, `typecheck`, `test`, `depcheck`.
+Run one workspace's script with `-w`, for example `npm run test -w @notes/domain`.
 
 ## Project structure
 
+The repository is an npm workspaces monorepo
+([ADR 11](docs/adr/0011-monorepo-shared-domain.md)):
+
 ```
-src/
-  domain/    Pure TypeScript domain types and logic. No React, router, i18n or browser APIs.
-  ui/        React components. May import domain/. All text via i18n.
-  ui/abc/    The only code that uses abcjs (sheet music, playback), loaded lazily.
-  app/       Entry point, router, i18n initialization, composition.
-  locales/   en.json (source of truth), fi.json
-tests/       Tests that check files outside src/ (tune data validation)
-tunes/       ABC tunes: tunes/<tune-id>/<variant-id>.abc (CC0 1.0)
-docs/adr/    Architecture Decision Records
+apps/web/                The web app (@notes/web)
+  src/ui/                React components. All text via i18n.
+  src/ui/abc/            The only code that uses abcjs (sheet music, playback), loaded lazily.
+  src/app/               Entry point, router, i18n initialization, composition.
+  src/locales/           en.json (source of truth), fi.json
+  tests/                 Tune data validation (tunes/ on disk, with an abcjs parse check)
+packages/domain/         @notes/domain: pure TypeScript tune domain (types, validation, keys,
+                         transposition, chords, search). No React, i18n, browser or Node APIs.
+tunes/                   ABC tunes: tunes/<tune-id>/<variant-id>.abc (CC0 1.0)
+docs/adr/                Architecture Decision Records
+docs/roadmap/backend.md  The step plan for the planned backend (ADR 12)
 ```
 
 Module boundaries are enforced by dependency-cruiser (`npm run depcheck`) and ESLint. See
@@ -49,9 +55,9 @@ Module boundaries are enforced by dependency-cruiser (`npm run depcheck`) and ES
 
 ## Adding a UI language
 
-1. Copy `src/locales/en.json` to `src/locales/<code>.json` (for example `sv.json`) and translate
+1. Copy `apps/web/src/locales/en.json` to `apps/web/src/locales/<code>.json` (for example `sv.json`) and translate
    the values. Keep every key; do not add new ones.
-2. Register it in `resources` in `src/app/i18n.ts`.
+2. Register it in `resources` in `apps/web/src/app/i18n.ts`.
 3. Add the language's own name under `language.names.<code>` in **every** locale file.
 4. Run `npm run check`. The locale test fails if any key is missing or extra.
 
