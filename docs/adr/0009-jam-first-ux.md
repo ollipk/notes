@@ -3,7 +3,8 @@
 Status: Accepted
 
 Refines the tune page layout of [ADR 8](0008-rendering-transposition-playback.md); its rendering,
-transposition and playback decisions still hold.
+transposition and playback decisions still hold. [ADR 10](0010-chords-and-player-settings.md) adds
+the View control and chord views.
 
 ## Context
 

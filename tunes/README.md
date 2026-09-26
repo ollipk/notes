@@ -86,6 +86,25 @@ K: D
 "D"d2 f2 a2|"G"b>a g2 e2|"A"f>e d2 c2|"D"d4 z2:|
 ```
 
+## Chord symbols
+
+Chord symbols make a tune usable for accompanists: the app can show them with the notes, as a
+chord chart, as guitar capo shapes, and play them as an accompaniment.
+
+- Write them in double quotes before the note they fall on: `"G"G2 "D7"AB`. The root is `A`–`G`
+  with an optional `#` or `b`, then the quality as usual (`m`, `7`, `m7`, `maj7`, `dim`, `aug`,
+  `sus4`, `6`, `9`, …), then an optional slash bass: `"D/F#"`, `"Am7/G"`.
+- Write them in the written key of the file. The app transposes and respells them.
+- Put a chord at the start of every bar where it changes. A bar without one continues the previous
+  chord.
+- Text in quotes starting with `^`, `_`, `<`, `>` or `@` is an annotation, not a chord.
+- To name parts in the chord chart, put `P:A`, `P:B`, … on their own line before each part.
+  Without them, parts are inferred from repeats.
+- **Keep harmonisations simple and conventional**: mostly the I, IV and V chords, with the relative
+  minor where it is natural. Players add their own colour.
+- **Never** copy a harmonisation from a published tune book, website or recording's liner notes.
+  Write the chords yourself, or leave them out: a tune without chords is still welcome.
+
 ## Data contribution rule
 
 - Only contribute transcriptions you made yourself, or material in the public domain both in its

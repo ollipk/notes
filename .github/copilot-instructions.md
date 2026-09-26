@@ -99,9 +99,17 @@ See ADR 0008.
 - Key logic (parsing `K:`, spelling, nearest offset) belongs in `src/domain/key.ts`. The ABC
   given to abcjs goes through `scoreAbc()` first.
 - Playback must pass `midiTranspose` as well as `visualTranspose`, or it plays the written key.
-- Only per-device preferences (zoom level, language) go into localStorage, wrapped in try/catch.
+- Language is stored by i18next. **Every other per-device preference** (display mode, playback
+  mode, capo shapes, zoom) lives in the settings module `src/ui/settings.ts` and is read and changed
+  only through `usePlayerSettings()`. Settings are **never** written to the URL: a shared link
+  carries only the tune, variant and transposition (ADR 10).
 - The home page search query is kept in the URL (`/#/?q=…`). Matching lives in
   `src/domain/search.ts` (`searchTunes`); the UI passes translated tune type labels in.
+- Chords (ADR 10): chord parsing, spelling, the chord chart (`buildChordChart` over neutral
+  `ChordEvent`s from the adapter) and capo suggestions are pure domain code. "Notes" mode removes
+  chord symbols with `withoutChordSymbols()`; playback modes use the abcjs synth options `chordsOff`
+  and `voicesOff`. The player parses the ABC with its chords itself, so it works in every display
+  mode.
 - Focus mode, the screen wake lock and printing are described in ADR 0009. Printing uses the
   `@media print` rules in `src/app/index.css` and `print:` utilities, not a separate page.
 
