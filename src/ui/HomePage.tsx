@@ -1,14 +1,15 @@
 import { useTranslation } from 'react-i18next';
-import type { Tune } from '../domain/tune';
+import type { Tune, TuneId } from '../domain/tune';
 import { LanguageSelect, type LanguageCode } from './LanguageSelect';
 import { TuneList } from './TuneList';
 
 interface HomePageProps {
   languages: readonly LanguageCode[];
   tunes: readonly Tune[];
+  tuneHref: (id: TuneId) => string;
 }
 
-export function HomePage({ languages, tunes }: HomePageProps) {
+export function HomePage({ languages, tunes, tuneHref }: HomePageProps) {
   const { t } = useTranslation();
 
   return (
@@ -17,7 +18,7 @@ export function HomePage({ languages, tunes }: HomePageProps) {
         <h1 className="text-4xl font-bold tracking-tight">{t('app.name')}</h1>
         <LanguageSelect languages={languages} />
       </header>
-      <TuneList tunes={tunes} />
+      <TuneList tunes={tunes} tuneHref={tuneHref} />
     </main>
   );
 }

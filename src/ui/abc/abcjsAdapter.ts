@@ -2,19 +2,28 @@ import abcjs, { type AbcVisualParams, type SynthOptions, type TuneObject } from 
 import 'abcjs/abcjs-audio.css';
 import type { AbcAdapter, Player, PlayerOptions, RenderOptions, Score } from './types';
 
-/** Lines reflow to fit the width; zooming in gives fewer bars per line. */
-const WRAP = { minSpacing: 1.8, maxSpacing: 2.7, preferredMeasuresPerLine: 4 };
 /** abcjs's default left and right padding, in unscaled units. */
 const PADDING = 15;
+/** Roughly how wide a bar is at scale 1, used to choose the number of bars per line. */
+const BAR_WIDTH = 120;
 
-/** Rendering options: transposition, zoom and fit to width. */
+/**
+ * Rendering options: transposition, zoom and fit to width. The score is laid out for the width
+ * divided by the zoom scale and then scaled to fit, so zooming in gives fewer, larger bars per
+ * line, on phones and wide screens alike.
+ */
 export function renderParams({ semitones, scale, width }: RenderOptions): AbcVisualParams {
+  const staffwidth = Math.max(100, width / scale - 2 * PADDING);
   return {
     visualTranspose: semitones,
     responsive: 'resize',
     scale,
-    staffwidth: Math.max(100, width / scale - 2 * PADDING),
-    wrap: WRAP,
+    staffwidth,
+    wrap: {
+      minSpacing: 1.2,
+      maxSpacing: 2.2,
+      preferredMeasuresPerLine: Math.max(4, Math.round(staffwidth / BAR_WIDTH)),
+    },
     add_classes: true,
   };
 }
@@ -37,6 +46,7 @@ function createPlayer(score: Score, { semitones, tempo, onEnded }: PlayerOptions
   controller.load(document.createElement('div'), { onFinished: onEnded }, { displayPlay: false });
   let warp = tempo;
   let loaded = false;
+  let disposed = false;
 
   const load = async () => {
     if (loaded) return;
@@ -59,6 +69,8 @@ function createPlayer(score: Score, { semitones, tempo, onEnded }: PlayerOptions
   return {
     async play() {
       await load();
+      // The page may have been left while the soundfont was loading.
+      if (disposed) return;
       // Typed as void, but returns a promise that rejects if the AudioContext cannot resume.
       await (controller.play() as unknown as Promise<unknown>);
     },
@@ -73,6 +85,7 @@ function createPlayer(score: Score, { semitones, tempo, onEnded }: PlayerOptions
       if (loaded) await controller.setWarp(percent);
     },
     dispose() {
+      disposed = true;
       controller.pause();
       (controller as unknown as { destroy(): void }).destroy();
     },
