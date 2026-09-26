@@ -2,8 +2,10 @@
   "app": {
     "name": "Notes"
   },
-  "home": {
-    "comingSoon": "Tulossa: kansanmusiikin nuotit ja transponointi"
+  "catalog": {
+    "heading": "Sävelmät",
+    "summary_one": "{{type}} · {{country}} · {{count}} versio",
+    "summary_other": "{{type}} · {{country}} · {{count}} versiota"
   },
   "language": {
     "label": "Kieli",
@@ -11,5 +13,26 @@
       "en": "English",
       "fi": "Suomi"
     }
+  },
+  "tuneType": {
+    "polska": "Polska",
+    "waltz": "Valssi",
+    "schottische": "Sottiisi",
+    "mazurka": "Masurkka",
+    "polka": "Polkka",
+    "hambo": "Hambo",
+    "march": "Marssi",
+    "minuet": "Menuetti",
+    "quadrille": "Katrilli",
+    "halling": "Halling",
+    "springar": "Springar",
+    "pols": "Pols",
+    "reel": "Reel",
+    "jig": "Jigi",
+    "slip-jig": "Slip jig",
+    "hornpipe": "Hornpipe",
+    "air": "Hidas sävelmä",
+    "song": "Laulu",
+    "other": "Muu"
   }
 }

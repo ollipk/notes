@@ -2,8 +2,10 @@
   "app": {
     "name": "Notes"
   },
-  "home": {
-    "comingSoon": "Coming soon: folk tune sheet music and transposition"
+  "catalog": {
+    "heading": "Tunes",
+    "summary_one": "{{type}} · {{country}} · {{count}} variant",
+    "summary_other": "{{type}} · {{country}} · {{count}} variants"
   },
   "language": {
     "label": "Language",
@@ -11,5 +13,26 @@
       "en": "English",
       "fi": "Suomi"
     }
+  },
+  "tuneType": {
+    "polska": "Polska",
+    "waltz": "Waltz",
+    "schottische": "Schottische",
+    "mazurka": "Mazurka",
+    "polka": "Polka",
+    "hambo": "Hambo",
+    "march": "March",
+    "minuet": "Minuet",
+    "quadrille": "Quadrille",
+    "halling": "Halling",
+    "springar": "Springar",
+    "pols": "Pols",
+    "reel": "Reel",
+    "jig": "Jig",
+    "slip-jig": "Slip jig",
+    "hornpipe": "Hornpipe",
+    "air": "Air",
+    "song": "Song",
+    "other": "Other"
   }
 }

@@ -43,7 +43,8 @@ Tunes in `tunes/` are released under CC0 1.0, so we must be sure we are allowed 
 - **Always record the source**: who played or taught it, a recording, or the public-domain
   publication it comes from.
 
-See [`tunes/README.md`](tunes/README.md) for the file format.
+See [`tunes/README.md`](tunes/README.md) for the file layout and format. `npm run check` validates
+every tune file and lists all problems with file and line.
 
 ## Licenses
 

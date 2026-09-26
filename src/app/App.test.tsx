@@ -1,4 +1,4 @@
-import { act, fireEvent, render, screen } from '@testing-library/react';
+import { act, fireEvent, render, screen, within } from '@testing-library/react';
 import { beforeEach, describe, expect, it } from 'vitest';
 import en from '../locales/en.json';
 import fi from '../locales/fi.json';
@@ -10,12 +10,22 @@ describe('App', () => {
     await act(() => i18n.changeLanguage('en'));
   });
 
-  it('shows the app name and the coming soon text', () => {
+  it('shows the app name and lists the tune catalog', () => {
     render(<App />);
 
     expect(screen.getByRole('heading', { level: 1, name: en.app.name })).toBeInTheDocument();
-    expect(screen.getByText(en.home.comingSoon)).toBeInTheDocument();
     expect(document.title).toBe(en.app.name);
+
+    const list = within(screen.getByRole('region', { name: en.catalog.heading })).getByRole('list');
+    const items = within(list).getAllByRole('listitem');
+    expect(items.map((item) => item.firstChild?.textContent)).toEqual([
+      'Drowsy Maggie',
+      'Greensleeves',
+      'Hårgalåten',
+      'The Kesh',
+    ]);
+    expect(items[3]).toHaveTextContent('Jig · IE · 2 variants');
+    expect(items[2]).toHaveTextContent('Polska · SE · 1 variant');
   });
 
   it('switches the text when another language is selected', async () => {
@@ -26,8 +36,9 @@ describe('App', () => {
       fireEvent.change(select, { target: { value: 'fi' } });
     });
 
-    expect(await screen.findByText(fi.home.comingSoon)).toBeInTheDocument();
-    expect(screen.queryByText(en.home.comingSoon)).not.toBeInTheDocument();
+    expect(await screen.findByRole('heading', { name: fi.catalog.heading })).toBeInTheDocument();
+    expect(screen.queryByRole('heading', { name: en.catalog.heading })).not.toBeInTheDocument();
+    expect(screen.getByText('Jigi · IE · 2 versiota')).toBeInTheDocument();
     expect(screen.getByRole('combobox', { name: fi.language.label })).toHaveValue('fi');
     expect(document.documentElement.lang).toBe('fi');
     expect(localStorage.getItem(LANGUAGE_STORAGE_KEY)).toBe('fi');
