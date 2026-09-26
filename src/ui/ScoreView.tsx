@@ -1,7 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { AbcAdapterState } from './abc/useAbcAdapter';
-import type { Score } from './abc/types';
 
 /** Used until the container can be measured (and in jsdom, which has no layout). */
 const FALLBACK_WIDTH = 360;
@@ -28,7 +27,6 @@ interface ScoreViewProps {
   scale: number;
   /** Focus mode: fill the available width and height, without the card's frame. */
   maximized?: boolean;
-  onRender: (score: Score) => void;
 }
 
 const cardClass =
@@ -43,7 +41,6 @@ export function ScoreView({
   semitones,
   scale,
   maximized = false,
-  onRender,
 }: ScoreViewProps) {
   const { t } = useTranslation();
   const container = useRef<HTMLDivElement>(null);
@@ -73,7 +70,7 @@ export function ScoreView({
     if (!element || !adapter) return;
     const available = width || element.clientWidth || FALLBACK_WIDTH;
     renderedWidth.current = available;
-    onRender(adapter.renderScore(element, source, { semitones, scale, width: available }));
+    adapter.renderScore(element, source, { semitones, scale, width: available });
 
     // Print the same key and variant at the same size on every device: lay the score out for
     // the printed page, not for the phone it was opened on, and restore it afterwards.
@@ -81,7 +78,7 @@ export function ScoreView({
       adapter.renderScore(element, source, { semitones, scale: 1, width: PRINT_WIDTH });
     };
     const renderForScreen = () => {
-      onRender(adapter.renderScore(element, source, { semitones, scale, width: available }));
+      adapter.renderScore(element, source, { semitones, scale, width: available });
     };
     window.addEventListener('beforeprint', renderForPrint);
     window.addEventListener('afterprint', renderForScreen);
@@ -89,7 +86,7 @@ export function ScoreView({
       window.removeEventListener('beforeprint', renderForPrint);
       window.removeEventListener('afterprint', renderForScreen);
     };
-  }, [adapter, source, semitones, scale, width, onRender]);
+  }, [adapter, source, semitones, scale, width]);
 
   return (
     <div

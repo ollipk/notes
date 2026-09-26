@@ -3,7 +3,6 @@ import { useTranslation } from 'react-i18next';
 import { parseKey } from '../domain/key';
 import { scoreAbc } from '../domain/scoreAbc';
 import type { Tune, TuneVariant, VariantId } from '../domain/tune';
-import type { Score } from './abc/types';
 import { useAbcAdapter } from './abc/useAbcAdapter';
 import { BottomBar } from './BottomBar';
 import { BackIcon, ExitFullScreenIcon, FullScreenIcon, PrintIcon } from './icons';
@@ -15,6 +14,7 @@ import { KeyPicker, KeyStepper, useKeyLine } from './TranspositionControls';
 import { TuneDetails } from './TuneDetails';
 import { TuneMeta, useOriginText } from './TuneMeta';
 import { useFocusMode } from './useFocusMode';
+import { usePlayerSettings } from './PlayerSettings';
 import { useWakeLock } from './useWakeLock';
 import { usePlayer } from './usePlayer';
 import { useZoom } from './useZoom';
@@ -52,8 +52,8 @@ export function TunePage({
   const { t, i18n } = useTranslation();
   const abc = useAbcAdapter();
   const zoom = useZoom();
+  const { settings } = usePlayerSettings();
   const [tempo, setTempo] = useState(100);
-  const [score, setScore] = useState<Score>();
   const [sheetOpen, setSheetOpen] = useState(false);
   const moreButton = useRef<HTMLButtonElement>(null);
   const focusMode = useFocusMode();
@@ -72,10 +72,11 @@ export function TunePage({
 
   const player = usePlayer({
     adapter: abc.status === 'ready' ? abc.adapter : undefined,
-    score,
+    abc: source,
     semitones: shownSemitones,
+    playback: settings.playbackMode,
     tempo,
-    resetKey: [tune.id, variant.variantId, shownSemitones].join('/'),
+    resetKey: [tune.id, variant.variantId, shownSemitones, settings.playbackMode].join('/'),
   });
 
   const closeSheet = useCallback(() => {
@@ -124,7 +125,6 @@ export function TunePage({
           semitones={shownSemitones}
           scale={zoom.scale}
           maximized={focusMode.active}
-          onRender={setScore}
         />
         {focusMode.active && (
           <button
