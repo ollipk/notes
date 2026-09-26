@@ -10,14 +10,24 @@ export function countryName(code: string, language: string | undefined): string 
   }
 }
 
-export function TuneMeta({ variant }: { variant: TuneVariant }) {
+/** Returns a function that names a variant's origin, e.g. "Sweden, Hälsingland". */
+export function useOriginText(): (variant: TuneVariant) => string {
   const { t, i18n } = useTranslation();
-  const { country, region } = variant.origin;
-  const countryLabel = countryName(country, i18n.resolvedLanguage);
+  return ({ origin: { country, region } }) => {
+    const countryLabel = countryName(country, i18n.resolvedLanguage);
+    return region === undefined
+      ? countryLabel
+      : t('tune.origin', { country: countryLabel, region });
+  };
+}
+
+export function TuneMeta({ variant }: { variant: TuneVariant }) {
+  const { t } = useTranslation();
+  const originText = useOriginText();
 
   const items = [
     t(`tuneType.${variant.type}`),
-    region === undefined ? countryLabel : t('tune.origin', { country: countryLabel, region }),
+    originText(variant),
     ...(variant.composer === undefined ? [] : [t('tune.composer', { composer: variant.composer })]),
   ];
 

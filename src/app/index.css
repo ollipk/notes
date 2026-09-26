@@ -9,3 +9,53 @@
     @apply bg-stone-50 text-stone-900 antialiased dark:bg-stone-900 dark:text-stone-100;
   }
 }
+
+/*
+ * Print (ADR 9): black on white whatever the colour scheme, only the title, the meta line, the
+ * score and the footer. Components hide the rest with `print:hidden`.
+ */
+@media print {
+  @page {
+    margin: 12mm;
+  }
+
+  :root {
+    color-scheme: light;
+  }
+
+  body,
+  body * {
+    color: #000 !important;
+    background: transparent !important;
+    box-shadow: none !important;
+  }
+
+  main {
+    max-width: none !important;
+    min-height: 0 !important;
+    padding: 0 !important;
+    gap: 4mm !important;
+  }
+
+  /* The score uses the full printable width, on A4 and Letter alike. */
+  .score-card {
+    max-width: none !important;
+    padding: 0 !important;
+    border-radius: 0 !important;
+    --tw-ring-shadow: 0 0 #0000 !important;
+  }
+
+  /*
+   * abcjs draws each staff line as its own SVG (oneSvgPerLine); never split one across pages.
+   * Its container is an inline-block, which the browser cannot break across pages at all.
+   */
+  .score-card .abcjs-container {
+    display: block !important;
+  }
+
+  .score-card svg,
+  .score-card div:has(> svg) {
+    display: block;
+    break-inside: avoid;
+  }
+}

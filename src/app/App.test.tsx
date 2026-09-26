@@ -1,12 +1,23 @@
-import { act, fireEvent, render, screen, within } from '@testing-library/react';
-import { beforeEach, describe, expect, it } from 'vitest';
+import { act, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import en from '../locales/en.json';
 import fi from '../locales/fi.json';
 import { App } from './App';
 import i18n, { LANGUAGE_STORAGE_KEY } from './i18n';
 
+// The tune page loads abcjs lazily; jsdom cannot render it.
+vi.mock('../ui/abc/loadAbc', () => ({ loadAbc: () => new Promise(() => {}) }));
+
+const searchField = () => screen.getByRole('searchbox', { name: en.search.label });
+const titles = () =>
+  within(screen.getByRole('region', { name: en.catalog.heading }))
+    .getAllByRole('listitem')
+    .map((item) => item.querySelector('a > span')?.textContent);
+const query = () => new URLSearchParams(window.location.hash.split('?')[1] ?? '').get('q');
+
 describe('App', () => {
   beforeEach(async () => {
+    window.location.hash = '#/';
     await act(() => i18n.changeLanguage('en'));
   });
 
@@ -28,8 +39,8 @@ describe('App', () => {
       'href',
       '#/tune/the-kesh',
     );
-    expect(items[3]).toHaveTextContent('Jig · IE · 2 variants');
-    expect(items[2]).toHaveTextContent('Polska · SE · 1 variant');
+    expect(items[3]).toHaveTextContent('Jig · Ireland · 2 variants');
+    expect(items[2]).toHaveTextContent('Polska · Sweden · 1 variant');
   });
 
   it('switches the text when another language is selected', async () => {
@@ -42,9 +53,70 @@ describe('App', () => {
 
     expect(await screen.findByRole('heading', { name: fi.catalog.heading })).toBeInTheDocument();
     expect(screen.queryByRole('heading', { name: en.catalog.heading })).not.toBeInTheDocument();
-    expect(screen.getByText('Jigi · IE · 2 versiota')).toBeInTheDocument();
+    expect(screen.getByText('Jigi · Irlanti · 2 versiota')).toBeInTheDocument();
     expect(screen.getByRole('combobox', { name: fi.language.label })).toHaveValue('fi');
     expect(document.documentElement.lang).toBe('fi');
     expect(localStorage.getItem(LANGUAGE_STORAGE_KEY)).toBe('fi');
+  });
+});
+
+describe('search', () => {
+  beforeEach(async () => {
+    window.location.hash = '#/';
+    await act(() => i18n.changeLanguage('en'));
+  });
+
+  it('focuses the search field when the home page opens', () => {
+    render(<App />);
+
+    expect(searchField()).toHaveFocus();
+    expect(searchField()).toHaveAttribute('type', 'search');
+  });
+
+  it('filters the list as the player types and keeps the query in the URL', () => {
+    render(<App />);
+
+    fireEvent.change(searchField(), { target: { value: 'hargala' } });
+
+    expect(titles()).toEqual(['Hårgalåten']);
+    expect(query()).toBe('hargala');
+
+    fireEvent.click(screen.getByRole('button', { name: en.search.clear }));
+
+    expect(titles()).toHaveLength(4);
+    expect(query()).toBeNull();
+    expect(searchField()).toHaveFocus();
+  });
+
+  it('reads the query from the URL', () => {
+    window.location.hash = '#/?q=kesh%20jig';
+    render(<App />);
+
+    expect(searchField()).toHaveValue('kesh jig');
+    expect(titles()).toEqual(['The Kesh']);
+  });
+
+  it('says so when nothing matches', () => {
+    window.location.hash = '#/?q=zzz';
+    render(<App />);
+
+    expect(screen.getByRole('status')).toHaveTextContent('No tunes match “zzz”.');
+  });
+
+  it('opens the first result on Enter, and back restores the results', async () => {
+    render(<App />);
+
+    fireEvent.change(searchField(), { target: { value: 'maggie' } });
+    fireEvent.submit(screen.getByRole('search'));
+
+    expect(
+      await screen.findByRole('heading', { level: 1, name: 'Drowsy Maggie' }),
+    ).toBeInTheDocument();
+    expect(window.location.hash).toBe('#/tune/drowsy-maggie');
+
+    act(() => window.history.back());
+
+    await waitFor(() => expect(searchField()).toHaveValue('maggie'));
+    expect(titles()).toEqual(['Drowsy Maggie']);
   });
 });

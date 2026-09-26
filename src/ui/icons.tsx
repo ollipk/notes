@@ -63,3 +63,42 @@ export const ZoomInIcon = () => (
     <path d="M21 21l-4.35-4.35M8 11h6M11 8v6" />
   </Icon>
 );
+
+export const CloseIcon = () => (
+  <Icon>
+    <path d="M6 6l12 12M18 6L6 18" />
+  </Icon>
+);
+
+export const BackIcon = () => (
+  <Icon>
+    <path d="M15 5l-7 7 7 7" />
+  </Icon>
+);
+
+export const MoreIcon = () => (
+  <Icon>
+    <circle cx="5" cy="12" r="1.5" fill="currentColor" />
+    <circle cx="12" cy="12" r="1.5" fill="currentColor" />
+    <circle cx="19" cy="12" r="1.5" fill="currentColor" />
+  </Icon>
+);
+
+export const FullScreenIcon = () => (
+  <Icon>
+    <path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5" />
+  </Icon>
+);
+
+export const ExitFullScreenIcon = () => (
+  <Icon>
+    <path d="M9 4v5H4M15 4v5h5M9 20v-5H4M15 20v-5h5" />
+  </Icon>
+);
+
+export const PrintIcon = () => (
+  <Icon>
+    <path d="M7 9V4h10v5M7 17H5a1 1 0 0 1-1-1v-6a1 1 0 0 1 1-1h14a1 1 0 0 1 1 1v6a1 1 0 0 1-1 1h-2" />
+    <path d="M7 14h10v6H7z" />
+  </Icon>
+);

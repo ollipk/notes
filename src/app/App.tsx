@@ -1,20 +1,32 @@
+import { useCallback, useRef } from 'react';
 import { HashRouter, Route, Routes } from 'react-router';
-import { HomePage } from '../ui/HomePage';
 import { NotFound } from '../ui/NotFound';
 import { catalog } from './catalog';
 import { supportedLanguages } from './i18n';
-import { HOME_HREF, tuneHref } from './routes';
+import { HomeRoute } from './HomeRoute';
+import { HOME_HREF } from './routes';
 import { TuneRoute } from './TuneRoute';
 
 export function App() {
+  const homeVisited = useRef(false);
+  const markHomeVisited = useCallback(() => {
+    homeVisited.current = true;
+  }, []);
+  const wasHomeVisited = useCallback(() => homeVisited.current, []);
+
   return (
     <HashRouter>
       <Routes>
         <Route
           path="/"
-          element={<HomePage languages={supportedLanguages} tunes={catalog} tuneHref={tuneHref} />}
+          element={
+            <HomeRoute languages={supportedLanguages} tunes={catalog} onVisit={markHomeVisited} />
+          }
         />
-        <Route path="/tune/:tuneId" element={<TuneRoute tunes={catalog} />} />
+        <Route
+          path="/tune/:tuneId"
+          element={<TuneRoute tunes={catalog} homeVisited={wasHomeVisited} />}
+        />
         <Route path="*" element={<NotFound homeHref={HOME_HREF} />} />
       </Routes>
     </HashRouter>

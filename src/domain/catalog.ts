@@ -23,9 +23,13 @@ export function buildCatalog(variants: readonly TuneVariant[]): Tune[] {
     }
   }
 
-  return tunes.sort(
-    (a, b) =>
-      titleCollator.compare(a.variants[0].titles[0], b.variants[0].titles[0]) ||
-      compareCodeUnits(a.id, b.id),
+  return tunes.sort(compareTunes);
+}
+
+/** Catalog order: by the primary title of the first variant, then by tune ID. */
+export function compareTunes(a: Tune, b: Tune): number {
+  return (
+    titleCollator.compare(a.variants[0].titles[0], b.variants[0].titles[0]) ||
+    compareCodeUnits(a.id, b.id)
   );
 }

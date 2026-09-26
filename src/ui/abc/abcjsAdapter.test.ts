@@ -35,6 +35,13 @@ function renderedFifths(abc: string, semitones: number): number {
 }
 
 describe('abcjs adapter', () => {
+  it('draws one SVG per staff line, so a printed line is never split across pages', () => {
+    expect(renderParams({ semitones: 0, scale: 1, width: 400 })).toMatchObject({
+      oneSvgPerLine: true,
+      visualTranspose: 0,
+    });
+  });
+
   it('plays in the displayed key, chords included', () => {
     const abc = tune('C', '"C"CEGc|');
     const pitchClasses = (pitches: number[] = []) => pitches.map((p) => ((p % 12) + 12) % 12);

@@ -25,6 +25,8 @@ export function renderParams({ semitones, scale, width }: RenderOptions): AbcVis
       preferredMeasuresPerLine: Math.max(4, Math.round(staffwidth / BAR_WIDTH)),
     },
     add_classes: true,
+    // One SVG per staff line, so printing can keep each line on one page (ADR 9).
+    oneSvgPerLine: true,
   };
 }
 

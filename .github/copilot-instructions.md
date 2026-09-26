@@ -11,6 +11,15 @@ together in whatever key suits the players present.
 Users are folk musicians internationally, often on a phone or tablet in the middle of a session.
 Design mobile-first: large touch targets, readable text, no hover-only interactions.
 
+**Guiding UX rule (ADR 9):** design for a player at a crowded, dim, noisy jam, holding a phone in
+one hand. Fewest taps, largest targets, the score first, everything else secondary.
+
+- Every touch target is at least **48×48 px** (`min-h-12`, `size-12`; see `src/ui/styles.ts`).
+  Every icon-only button has a translated `aria-label`.
+- The tune page opens with the score directly below a one-line header, without scrolling.
+  Frequent controls (transpose, play) live in the bottom bar; everything else goes in the "More"
+  sheet. Do not add controls above the score.
+
 It is a static site on GitHub Pages (https://ollipk.github.io/notes/) with **no backend**.
 
 ## Tech stack (fixed decisions)
@@ -91,6 +100,10 @@ See ADR 0008.
   given to abcjs goes through `scoreAbc()` first.
 - Playback must pass `midiTranspose` as well as `visualTranspose`, or it plays the written key.
 - Only per-device preferences (zoom level, language) go into localStorage, wrapped in try/catch.
+- The home page search query is kept in the URL (`/#/?q=…`). Matching lives in
+  `src/domain/search.ts` (`searchTunes`); the UI passes translated tune type labels in.
+- Focus mode, the screen wake lock and printing are described in ADR 0009. Printing uses the
+  `@media print` rules in `src/app/index.css` and `print:` utilities, not a separate page.
 
 ## Do not
 
