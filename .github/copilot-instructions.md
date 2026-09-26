@@ -65,7 +65,12 @@ It is a static site on GitHub Pages (https://ollipk.github.io/notes/) with **no 
 
 ## Tune data
 
-- ABC files live in `tunes/`, one tune per file, released under CC0 1.0.
+- Layout `tunes/<tune-id>/<variant-id>.abc`: a folder per tune, a file per variant, released
+  under CC0 1.0. The full format (required header fields and order, the `R:` tune type
+  vocabulary in `src/domain/tuneType.ts`) is specified in [`tunes/README.md`](../tunes/README.md).
+- `tests/tune-data.test.ts` validates every file. The app loads them with an eager
+  `import.meta.glob` in `src/app/catalog.ts` (ADR 0007).
+- A new tune type needs a `tuneType.<id>` label in every locale file.
 - Only transcriptions made by the contributor, or material in the public domain both in its
   country of origin and in the contributor's country. Always record the source.
 - **Never** copy from published tune books, websites or other copyrighted editions.
@@ -73,7 +78,7 @@ It is a static site on GitHub Pages (https://ollipk.github.io/notes/) with **no 
 ## Do not
 
 - Hardcode UI strings.
-- Use browser APIs or framework imports in `src/domain/`.
+- Use browser APIs or framework imports in `src/domain/`, or import abcjs there.
 - Create, edit or delete any `LICENSE` file (root `LICENSE` is MIT, `tunes/LICENSE` is CC0).
 - Add a Tailwind v3-style config (`tailwind.config.js`, `postcss.config.js`, `@tailwind`).
 - Switch to a browser (history) router or add a backend.

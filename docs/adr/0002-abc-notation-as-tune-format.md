@@ -1,6 +1,6 @@
 # 2. ABC notation as the tune format
 
-Status: Accepted
+Status: Accepted (file layout and validation refined by [ADR 7](0007-tune-file-format.md))
 
 ## Context
 

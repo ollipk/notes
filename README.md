@@ -8,7 +8,7 @@ It is built for phones and tablets at group sessions, and runs as a static site 
 
 **Live:** https://ollipk.github.io/notes/
 
-> Status: foundation only. Tune rendering and transposition are coming.
+> Status: early. The app lists the tune catalog; rendering and transposition are coming.
 
 ## Quick start
 
@@ -33,7 +33,8 @@ src/
   ui/        React components. May import domain/. All text via i18n.
   app/       Entry point, router, i18n initialization, composition.
   locales/   en.json (source of truth), fi.json
-tunes/       ABC tune files, one tune per file (CC0 1.0)
+tests/       Tests that check files outside src/ (tune data validation)
+tunes/       ABC tunes: tunes/<tune-id>/<variant-id>.abc (CC0 1.0)
 docs/adr/    Architecture Decision Records
 ```
 
