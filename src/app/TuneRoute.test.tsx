@@ -1,5 +1,5 @@
 import { act, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import en from '../locales/en.json';
 import type { AbcAdapter, Player, Score } from '../ui/abc/types';
 import { App } from './App';
@@ -391,5 +391,61 @@ describe('focus mode', () => {
 
       expect(chromeShown()).toEqual(allShown);
     });
+  });
+});
+
+describe('screen wake lock', () => {
+  beforeEach(async () => {
+    await act(() => i18n.changeLanguage('en'));
+    fake.adapter.renderScore.mockReturnValue({} as Score);
+  });
+
+  const setWakeLock = (value: unknown) =>
+    Object.defineProperty(navigator, 'wakeLock', { configurable: true, value });
+  afterEach(() => {
+    Reflect.deleteProperty(navigator, 'wakeLock');
+  });
+
+  it('keeps the screen on while a tune is open', async () => {
+    const sentinel = { released: false, release: vi.fn(() => Promise.resolve()) };
+    const request = vi.fn(() => Promise.resolve(sentinel));
+    setWakeLock({ request });
+    window.location.hash = '#/tune/the-kesh';
+    const { unmount } = render(<App />);
+
+    await waitFor(() => expect(request).toHaveBeenCalledWith('screen'));
+    expect(sentinel.release).not.toHaveBeenCalled();
+
+    unmount();
+
+    expect(sentinel.release).toHaveBeenCalled();
+  });
+
+  it('asks again when the page becomes visible after the browser released the lock', async () => {
+    const sentinel = { released: false, release: vi.fn(() => Promise.resolve()) };
+    const request = vi.fn(() => Promise.resolve(sentinel));
+    setWakeLock({ request });
+    open('#/tune/the-kesh');
+    await waitFor(() => expect(request).toHaveBeenCalledTimes(1));
+
+    sentinel.released = true;
+    act(() => document.dispatchEvent(new Event('visibilitychange')));
+
+    await waitFor(() => expect(request).toHaveBeenCalledTimes(2));
+  });
+
+  it('carries on when the lock is refused', async () => {
+    const request = vi.fn(() => Promise.reject(new Error('denied')));
+    setWakeLock({ request });
+    open('#/tune/the-kesh');
+
+    await waitFor(() => expect(request).toHaveBeenCalled());
+    expect(screen.getByRole('heading', { level: 1, name: 'The Kesh' })).toBeInTheDocument();
+  });
+
+  it('carries on where the API does not exist', () => {
+    expect('wakeLock' in navigator).toBe(false);
+    open('#/tune/the-kesh');
+    expect(screen.getByRole('heading', { level: 1, name: 'The Kesh' })).toBeInTheDocument();
   });
 });

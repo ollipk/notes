@@ -15,6 +15,7 @@ import { KeyPicker, KeyStepper } from './TranspositionControls';
 import { TuneDetails } from './TuneDetails';
 import { TuneMeta } from './TuneMeta';
 import { useFocusMode } from './useFocusMode';
+import { useWakeLock } from './useWakeLock';
 import { usePlayer } from './usePlayer';
 import { useZoom } from './useZoom';
 import { VariantSelect } from './VariantSelect';
@@ -56,6 +57,8 @@ export function TunePage({
   const [sheetOpen, setSheetOpen] = useState(false);
   const moreButton = useRef<HTMLButtonElement>(null);
   const focusMode = useFocusMode();
+  // The score must stay readable while playing, without touching the screen.
+  useWakeLock();
 
   const writtenKey = useMemo(() => parseKey(variant.key), [variant.key]);
   const shownSemitones = writtenKey.ok ? semitones : 0;
