@@ -21,11 +21,25 @@ interface ScoreViewProps {
   title: string;
   semitones: number;
   scale: number;
+  /** Focus mode: fill the available width and height, without the card's frame. */
+  maximized?: boolean;
   onRender: (score: Score) => void;
 }
 
+const cardClass =
+  'mx-auto w-full rounded-xl bg-white p-2 text-black shadow-sm ring-1 ring-stone-300 sm:p-4 dark:ring-stone-600';
+const maximizedClass = 'min-h-full w-full bg-white p-2 text-black sm:p-4';
+
 /** The sheet music, on a white "paper" card in light and dark mode so black notation stays readable. */
-export function ScoreView({ abc, source, title, semitones, scale, onRender }: ScoreViewProps) {
+export function ScoreView({
+  abc,
+  source,
+  title,
+  semitones,
+  scale,
+  maximized = false,
+  onRender,
+}: ScoreViewProps) {
   const { t } = useTranslation();
   const container = useRef<HTMLDivElement>(null);
   const renderedWidth = useRef(0);
@@ -59,8 +73,8 @@ export function ScoreView({ abc, source, title, semitones, scale, onRender }: Sc
 
   return (
     <div
-      style={{ maxWidth: MAX_WIDTH_AT_SCALE_1 * scale }}
-      className="mx-auto w-full rounded-xl bg-white p-2 text-black shadow-sm ring-1 ring-stone-300 sm:p-4 dark:ring-stone-600"
+      style={maximized ? undefined : { maxWidth: MAX_WIDTH_AT_SCALE_1 * scale }}
+      className={maximized ? maximizedClass : cardClass}
     >
       {abc.status === 'loading' && <p className="p-4 text-stone-700">{t('score.loading')}</p>}
       {abc.status === 'error' && (

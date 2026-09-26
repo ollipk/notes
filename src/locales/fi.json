@@ -105,5 +105,9 @@
   },
   "sheet": {
     "close": "Sulje"
+  },
+  "focus": {
+    "enter": "Koko näyttö",
+    "exit": "Poistu koko näytöstä"
   }
 }

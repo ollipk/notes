@@ -6,18 +6,22 @@ import type { Tune, TuneVariant, VariantId } from '../domain/tune';
 import type { Score } from './abc/types';
 import { useAbcAdapter } from './abc/useAbcAdapter';
 import { BottomBar } from './BottomBar';
-import { BackIcon } from './icons';
+import { BackIcon, ExitFullScreenIcon, FullScreenIcon } from './icons';
 import { ScoreView } from './ScoreView';
 import { Sheet } from './Sheet';
-import { labelClass, plainIconButtonClass } from './styles';
+import { labelClass, plainIconButtonClass, textButtonClass } from './styles';
 import { TempoControls } from './TempoControls';
 import { KeyPicker, KeyStepper } from './TranspositionControls';
 import { TuneDetails } from './TuneDetails';
 import { TuneMeta } from './TuneMeta';
+import { useFocusMode } from './useFocusMode';
 import { usePlayer } from './usePlayer';
 import { useZoom } from './useZoom';
 import { VariantSelect } from './VariantSelect';
 import { ZoomControls } from './ZoomControls';
+
+/** Focus mode: the score card fills the screen (ADR 9). */
+const focusModeClass = 'fixed inset-0 z-50 overflow-y-auto bg-white';
 
 interface TunePageProps {
   tune: Tune;
@@ -51,6 +55,7 @@ export function TunePage({
   const [score, setScore] = useState<Score>();
   const [sheetOpen, setSheetOpen] = useState(false);
   const moreButton = useRef<HTMLButtonElement>(null);
+  const focusMode = useFocusMode();
 
   const writtenKey = useMemo(() => parseKey(variant.key), [variant.key]);
   const shownSemitones = writtenKey.ok ? semitones : 0;
@@ -75,59 +80,78 @@ export function TunePage({
 
   return (
     <main className="mx-auto flex min-h-dvh w-full max-w-3xl flex-col gap-3 px-2 pt-1 pb-[calc(6rem+env(safe-area-inset-bottom))] sm:px-6">
-      <header className="flex min-w-0 items-center gap-1">
-        <a
-          href={homeHref}
-          aria-label={t('tune.back')}
-          onClick={(event) => {
-            event.preventDefault();
-            onBack();
-          }}
-          className={plainIconButtonClass}
-        >
-          <BackIcon />
-        </a>
-        <h1 className="min-w-0 truncate text-xl font-bold tracking-tight">{title}</h1>
-      </header>
+      {!focusMode.active && (
+        <header className="flex min-w-0 items-center gap-1">
+          <a
+            href={homeHref}
+            aria-label={t('tune.back')}
+            onClick={(event) => {
+              event.preventDefault();
+              onBack();
+            }}
+            className={plainIconButtonClass}
+          >
+            <BackIcon />
+          </a>
+          <h1 className="min-w-0 truncate text-xl font-bold tracking-tight">{title}</h1>
+        </header>
+      )}
 
-      <ScoreView
-        abc={abc}
-        source={source}
-        title={title}
-        semitones={shownSemitones}
-        scale={zoom.scale}
-        onRender={setScore}
-      />
-
-      <div className="flex flex-col gap-4 px-2 pt-2">
-        <div className="flex flex-col gap-1">
-          {alternateTitles.length > 0 && (
-            <p className="text-lg text-stone-700 dark:text-stone-300">
-              {t('tune.alsoKnownAs', { titles: alternates })}
-            </p>
-          )}
-          <TuneMeta variant={variant} />
-        </div>
-        <TuneDetails variant={variant} />
+      <div className={focusMode.active ? focusModeClass : undefined}>
+        <ScoreView
+          abc={abc}
+          source={source}
+          title={title}
+          semitones={shownSemitones}
+          scale={zoom.scale}
+          maximized={focusMode.active}
+          onRender={setScore}
+        />
+        {focusMode.active && (
+          <button
+            type="button"
+            aria-label={t('focus.exit')}
+            onClick={focusMode.exit}
+            className="fixed top-[max(0.5rem,env(safe-area-inset-top))] right-[max(0.5rem,env(safe-area-inset-right))] inline-flex size-12 items-center justify-center rounded-full bg-stone-900/40 text-white opacity-70 focus:opacity-100 focus:ring-2 focus:ring-amber-600 focus:outline-none active:opacity-100"
+          >
+            <ExitFullScreenIcon />
+          </button>
+        )}
       </div>
 
-      <BottomBar
-        transposition={
-          writtenKey.ok && (
-            <KeyStepper
-              writtenKey={writtenKey.value}
-              semitones={shownSemitones}
-              onChange={onSemitonesChange}
-            />
-          )
-        }
-        playerStatus={player.status}
-        canPlay={player.canPlay}
-        onPlay={player.play}
-        onPause={player.pause}
-        moreButton={moreButton}
-        onMore={() => setSheetOpen(true)}
-      />
+      {!focusMode.active && (
+        <div className="flex flex-col gap-4 px-2 pt-2">
+          <div className="flex flex-col gap-1">
+            {alternateTitles.length > 0 && (
+              <p className="text-lg text-stone-700 dark:text-stone-300">
+                {t('tune.alsoKnownAs', { titles: alternates })}
+              </p>
+            )}
+            <TuneMeta variant={variant} />
+          </div>
+          <TuneDetails variant={variant} />
+        </div>
+      )}
+
+      {!focusMode.active && (
+        <BottomBar
+          transposition={
+            writtenKey.ok && (
+              <KeyStepper
+                writtenKey={writtenKey.value}
+                semitones={shownSemitones}
+                onChange={onSemitonesChange}
+              />
+            )
+          }
+          playerStatus={player.status}
+          canPlay={player.canPlay}
+          onPlay={player.play}
+          onPause={player.pause}
+          moreButton={moreButton}
+          onMore={() => setSheetOpen(true)}
+        />
+      )}
 
       {sheetOpen && (
         <Sheet label={t('tune.more')} onClose={closeSheet}>
@@ -163,6 +187,19 @@ export function TunePage({
             canRestart={player.canRestart}
             onRestart={player.restart}
           />
+          <div className="flex flex-wrap gap-2">
+            <button
+              type="button"
+              onClick={() => {
+                setSheetOpen(false);
+                focusMode.enter();
+              }}
+              className={textButtonClass}
+            >
+              <FullScreenIcon />
+              {t('focus.enter')}
+            </button>
+          </div>
         </Sheet>
       )}
     </main>

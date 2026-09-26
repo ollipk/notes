@@ -4,6 +4,9 @@ const controlBase =
 
 export const controlClass = `${controlBase} px-3`;
 
+/** A button with an icon and a text label. */
+export const textButtonClass = `${controlBase} inline-flex items-center gap-2 px-4`;
+
 export const iconButtonClass = `${controlBase} inline-flex min-w-12 items-center justify-center px-2`;
 
 /** An icon button without a border, e.g. "back" in the header. */

@@ -105,5 +105,9 @@
   },
   "sheet": {
     "close": "Close"
+  },
+  "focus": {
+    "enter": "Full screen",
+    "exit": "Exit full screen"
   }
 }

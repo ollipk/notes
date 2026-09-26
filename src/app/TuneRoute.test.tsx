@@ -286,3 +286,110 @@ describe('tune page', () => {
     expect(keyText()).toHaveTextContent('A♭ major+1 semitone');
   });
 });
+
+describe('focus mode', () => {
+  beforeEach(async () => {
+    await act(() => i18n.changeLanguage('en'));
+    fake.adapter.renderScore.mockReturnValue({} as Score);
+  });
+
+  const enterFocusMode = () => {
+    openMore();
+    fireEvent.click(within(sheet()).getByRole('button', { name: en.focus.enter }));
+  };
+  const chromeShown = () => ({
+    header: screen.queryByRole('banner') !== null,
+    bar: screen.queryByRole('group', { name: en.tune.controls }) !== null,
+    details: screen.queryByRole('region', { name: en.tune.details }) !== null,
+  });
+  const allShown = { header: true, bar: true, details: true };
+  const noneShown = { header: false, bar: false, details: false };
+
+  it('shows only the score, and the exit button brings the page back (CSS fallback)', () => {
+    // jsdom has no Fullscreen API, like iPhone Safari.
+    expect(document.fullscreenEnabled).toBeFalsy();
+    open('#/tune/the-kesh');
+
+    enterFocusMode();
+
+    expect(chromeShown()).toEqual(noneShown);
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+    expect(screen.getByRole('img', { name: 'Sheet music: The Kesh' })).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole('button', { name: en.focus.exit }));
+
+    expect(chromeShown()).toEqual(allShown);
+    expect(screen.queryByRole('button', { name: en.focus.exit })).not.toBeInTheDocument();
+  });
+
+  it('leaves the CSS focus mode with Escape', () => {
+    open('#/tune/the-kesh');
+    enterFocusMode();
+
+    fireEvent.keyDown(document, { key: 'Escape' });
+
+    expect(chromeShown()).toEqual(allShown);
+  });
+
+  describe('with the Fullscreen API', () => {
+    let fullscreenElement: Element | null = null;
+    const setFullscreen = (element: Element | null) => {
+      fullscreenElement = element;
+      document.dispatchEvent(new Event('fullscreenchange'));
+    };
+    const requestFullscreen = vi.fn(function (this: Element) {
+      setFullscreen(this);
+      return Promise.resolve();
+    });
+    const exitFullscreen = vi.fn(() => {
+      setFullscreen(null);
+      return Promise.resolve();
+    });
+
+    beforeEach(() => {
+      fullscreenElement = null;
+      Object.defineProperty(document, 'fullscreenEnabled', { configurable: true, value: true });
+      Object.defineProperty(document, 'fullscreenElement', {
+        configurable: true,
+        get: () => fullscreenElement,
+      });
+      Object.defineProperty(document, 'exitFullscreen', {
+        configurable: true,
+        value: exitFullscreen,
+      });
+      Object.defineProperty(document.documentElement, 'requestFullscreen', {
+        configurable: true,
+        value: requestFullscreen,
+      });
+      return () => {
+        for (const name of ['fullscreenEnabled', 'fullscreenElement', 'exitFullscreen']) {
+          Reflect.deleteProperty(document, name);
+        }
+        Reflect.deleteProperty(document.documentElement, 'requestFullscreen');
+      };
+    });
+
+    it('enters browser full screen and leaves it with the exit button', () => {
+      open('#/tune/the-kesh');
+
+      enterFocusMode();
+
+      expect(requestFullscreen).toHaveBeenCalled();
+      expect(chromeShown()).toEqual(noneShown);
+
+      fireEvent.click(screen.getByRole('button', { name: en.focus.exit }));
+
+      expect(exitFullscreen).toHaveBeenCalled();
+      expect(chromeShown()).toEqual(allShown);
+    });
+
+    it('follows the browser when full screen is left by a system gesture', () => {
+      open('#/tune/the-kesh');
+      enterFocusMode();
+
+      act(() => setFullscreen(null));
+
+      expect(chromeShown()).toEqual(allShown);
+    });
+  });
+});
