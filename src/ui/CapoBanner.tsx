@@ -11,7 +11,7 @@ export function CapoBanner({ suggestion }: { suggestion: CapoSuggestion }) {
   return (
     <p
       role="note"
-      className="mx-auto w-full max-w-xl rounded-lg bg-amber-100 px-3 py-2 text-center text-lg font-semibold text-amber-950 dark:bg-amber-900/60 dark:text-amber-50 print:bg-transparent print:px-0 print:text-left"
+      className="mx-auto w-full max-w-xl rounded-lg bg-amber-100 px-3 py-2 text-center text-lg font-semibold text-amber-950 dark:bg-amber-900/60 dark:text-amber-50 print:mx-0 print:bg-transparent print:px-0 print:text-left"
     >
       {t('capo.banner', { capo: suggestion.capo, shape })}
     </p>

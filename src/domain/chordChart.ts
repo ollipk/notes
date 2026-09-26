@@ -60,7 +60,8 @@ const emptyBar = (): PendingBar => ({ chords: [], repeatStart: false, repeatEnd:
  * - Parts come from `P:` fields in the tune body. Without them, a part starts at a repeat start,
  *   or at the first bar after a repeat end that is not a numbered ending: A, B, C, …
  * - A bar without a chord symbol repeats the previous chord, marked as carried.
- * - A first bar without chords is taken to be a pickup and dropped.
+ * - A bar without chords at the start of the tune or of a `P:` part is taken to be a pickup and
+ *   dropped.
  */
 export function buildChordChart(events: readonly ChordEvent[]): ChordChart {
   const labelled = events.some(({ kind }) => kind === 'part');
@@ -76,8 +77,8 @@ export function buildChordChart(events: readonly ChordEvent[]): ChordChart {
     pending = emptyBar();
     hasContent = false;
     barCount += 1;
-    if (barCount === 1 && bar.chords.length === 0) {
-      // A pickup. Its markers belong to the first full bar.
+    if (bar.chords.length === 0 && (barCount === 1 || bar.part !== undefined)) {
+      // A pickup, before the tune or a P: part. Its markers belong to the first full bar.
       pending.repeatStart = bar.repeatStart;
       if (bar.part !== undefined) pending.part = bar.part;
       return;

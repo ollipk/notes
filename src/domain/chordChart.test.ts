@@ -101,6 +101,13 @@ describe('buildChordChart', () => {
     });
   });
 
+  it('drops a pickup without chords at the start of a P: part', () => {
+    expect(chords('P:A | G | D | P:B | C | G |')).toEqual([
+      ['A', ['G', 'D']],
+      ['B', ['C', 'G']],
+    ]);
+  });
+
   it('keeps a leading bar with chords', () => {
     expect(chords('D | G |')).toEqual([['A', ['D', 'G']]]);
   });
