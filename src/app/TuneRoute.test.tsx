@@ -14,7 +14,12 @@ const fake = vi.hoisted(() => {
     setTempo: vi.fn(),
     dispose: vi.fn(),
   };
-  const adapter = { renderScore: vi.fn(), supportsAudio: vi.fn(), createPlayer: vi.fn() };
+  const adapter = {
+    renderScore: vi.fn(),
+    supportsAudio: vi.fn(),
+    createPlayer: vi.fn(),
+    chordEvents: vi.fn(),
+  };
   return { player, adapter };
 });
 vi.mock('../ui/abc/loadAbc', () => ({
@@ -43,6 +48,7 @@ describe('tune page', () => {
     fake.adapter.renderScore.mockReturnValue({} as Score);
     fake.adapter.supportsAudio.mockReturnValue(true);
     fake.adapter.createPlayer.mockReturnValue(fake.player as Player);
+    fake.adapter.chordEvents.mockReturnValue([]);
     fake.player.play.mockResolvedValue(undefined);
     fake.player.setTempo.mockResolvedValue(undefined);
   });
@@ -255,8 +261,8 @@ describe('tune page', () => {
     });
 
     expect(fake.adapter.createPlayer).toHaveBeenCalledWith(
-      expect.anything(),
-      expect.objectContaining({ semitones: -2, tempo: 60 }),
+      expect.stringContaining('K:'),
+      expect.objectContaining({ semitones: -2, tempo: 60, playback: 'melody' }),
     );
     expect(fake.player.play).toHaveBeenCalled();
     expect(screen.getByRole('button', { name: en.player.pause })).toBeInTheDocument();

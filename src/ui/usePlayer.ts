@@ -1,23 +1,33 @@
 import { useEffect, useRef, useState } from 'react';
-import type { AbcAdapter, Player, Score } from './abc/types';
+import type { AbcAdapter, Player } from './abc/types';
+import type { PlaybackMode } from './settings';
 
 export type PlayerStatus = 'idle' | 'loading' | 'playing' | 'paused' | 'error';
 
 interface UsePlayerOptions {
   adapter: AbcAdapter | undefined;
-  score: Score | undefined;
+  /** The ABC to play, with its chord symbols. */
+  abc: string;
   /** The transposition the score is shown in; playback uses the same key. */
   semitones: number;
+  playback: PlaybackMode;
   tempo: number;
   /**
-   * Changes when the tune, variant or transposition changes. Playback then stops and the next
-   * Play starts from the new score. Leaving the page stops it too.
+   * Changes when the tune, variant, transposition or playback mode changes. Playback then stops
+   * and the next Play starts from the new settings. Leaving the page stops it too.
    */
   resetKey: string;
 }
 
 /** Playback state. Audio starts only from `play()`, which must be called from a user gesture. */
-export function usePlayer({ adapter, score, semitones, tempo, resetKey }: UsePlayerOptions) {
+export function usePlayer({
+  adapter,
+  abc,
+  semitones,
+  playback,
+  tempo,
+  resetKey,
+}: UsePlayerOptions) {
   const player = useRef<Player | null>(null);
   const [status, setStatus] = useState<PlayerStatus>('idle');
   const [statusKey, setStatusKey] = useState(resetKey);
@@ -35,13 +45,14 @@ export function usePlayer({ adapter, score, semitones, tempo, resetKey }: UsePla
   );
 
   const play = async () => {
-    if (!adapter || !score) return;
+    if (!adapter) return;
     if (!adapter.supportsAudio()) {
       setStatus('error');
       return;
     }
-    const current = (player.current ??= adapter.createPlayer(score, {
+    const current = (player.current ??= adapter.createPlayer(abc, {
       semitones,
+      playback,
       tempo,
       onEnded: () => {
         if (player.current === current) setStatus('paused');
@@ -68,7 +79,7 @@ export function usePlayer({ adapter, score, semitones, tempo, resetKey }: UsePla
 
   return {
     status,
-    canPlay: adapter !== undefined && score !== undefined && status !== 'loading',
+    canPlay: adapter !== undefined && status !== 'loading',
     canRestart: status === 'playing' || status === 'paused',
     play: () => void play(),
     pause: () => {

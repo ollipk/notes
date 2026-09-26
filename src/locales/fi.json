@@ -11,7 +11,8 @@
     "label": "Hae sävelmiä",
     "placeholder": "Hae nimellä, lajilla tai alueella",
     "clear": "Tyhjennä haku",
-    "noResults": "Hakua ”{{query}}” vastaavia sävelmiä ei löytynyt."
+    "noResults": "Hakua ”{{query}}” vastaavia sävelmiä ei löytynyt.",
+    "chordsBadge": "soinnut"
   },
   "language": {
     "label": "Kieli",
@@ -113,5 +114,33 @@
   "print": {
     "action": "Tulosta",
     "address": "Verkossa"
+  },
+  "view": {
+    "title": "Näkymä",
+    "button": "Näkymä: {{mode}}",
+    "display": {
+      "label": "Näytä",
+      "notes": "Nuotit",
+      "notesAndChords": "Nuotit + soinnut",
+      "chordChart": "Sointukaavio"
+    },
+    "playback": {
+      "label": "Soita",
+      "melody": "Melodia",
+      "melodyAndAccompaniment": "Melodia + säestys",
+      "accompanimentOnly": "Vain säestys"
+    },
+    "capoShapes": "Kitaran capo-otteet",
+    "noChords": "Tälle sävelmälle ei ole vielä sointuja."
+  },
+  "chart": {
+    "label": "Sointukaavio: {{title}}",
+    "repeatStart": "Toisto alkaa",
+    "repeatEnd": "Toista",
+    "ending": "{{number}}. maali",
+    "endingMark": "{{number}}."
+  },
+  "capo": {
+    "banner": "Capo {{capo}} · soita {{shape}}-otteilla"
   }
 }

@@ -12,7 +12,8 @@ import {
   transposeKey,
 } from '../../domain/key';
 import { scoreAbc } from '../../domain/scoreAbc';
-import { audioParams, renderParams } from './abcjsAdapter';
+import type { PlaybackMode } from '../settings';
+import { audioParams, chordEvents, renderParams } from './abcjsAdapter';
 
 const tune = (key: string, body: string) =>
   scoreAbc(`X:1\nT:Test\nM:4/4\nL:1/4\nK:${key}\n${body}\n`);
@@ -23,9 +24,13 @@ function parse(abc: string, semitones: number) {
   return parsed;
 }
 
+function notes(abc: string, semitones: number, playback: PlaybackMode) {
+  const { tracks } = parse(abc, semitones).setUpAudio(audioParams(semitones, playback));
+  return tracks.map((track) => track.filter((e) => e.cmd === 'note'));
+}
+
 function notePitches(abc: string, semitones: number): number[][] {
-  const { tracks } = parse(abc, semitones).setUpAudio(audioParams(semitones));
-  return tracks.map((track) => track.filter((e) => e.cmd === 'note').map((e) => e.pitch));
+  return notes(abc, semitones, 'melodyAndAccompaniment').map((track) => track.map((e) => e.pitch));
 }
 
 function renderedFifths(abc: string, semitones: number): number {
@@ -56,6 +61,25 @@ describe('abcjs adapter', () => {
     }
   });
 
+  it('plays the melody alone, with accompaniment, or the accompaniment alone', () => {
+    const abc = tune('C', '"C"CEGc|"G"GBdg|');
+    const volumes = (playback: PlaybackMode) =>
+      notes(abc, 0, playback).map((track) => Math.max(...track.map((e) => e.volume)));
+
+    expect(audioParams(0, 'melody')).toEqual({ midiTranspose: 0, chordsOff: true });
+    expect(audioParams(3, 'accompanimentOnly')).toEqual({ midiTranspose: 3, voicesOff: true });
+    expect(audioParams(-2, 'melodyAndAccompaniment')).toEqual({ midiTranspose: -2 });
+
+    // One track per voice, then the chord track when chords play.
+    expect(volumes('melody')).toHaveLength(1);
+    const [melody, chords] = volumes('melodyAndAccompaniment');
+    expect(melody).toBeGreaterThan(0);
+    expect(chords).toBeGreaterThan(0);
+    const [silentMelody, onlyChords] = volumes('accompanimentOnly');
+    expect(silentMelody).toBe(0);
+    expect(onlyChords).toBeGreaterThan(0);
+  });
+
   it('transposes chord symbols with the notes', () => {
     const [chord] =
       parse(tune('Am', '"Am"A4|'), 2)
@@ -81,5 +105,50 @@ describe('abcjs adapter', () => {
       }
     }
     expect(mismatches).toEqual([]);
+  });
+
+  describe('chordEvents', () => {
+    it('lists bars, chords, repeats and endings in playing order', () => {
+      const abc = tune('G', '|:"G"G2 "D7"AB|[1"C"c4:|[2"D"d4|]\n|:"Em"E4|"^slow"E4:|');
+      expect(chordEvents(abc)).toEqual([
+        { kind: 'repeatStart' },
+        { kind: 'chord', value: 'G' },
+        { kind: 'chord', value: 'D7' },
+        { kind: 'bar' },
+        { kind: 'ending', value: '1' },
+        { kind: 'chord', value: 'C' },
+        { kind: 'repeatEnd' },
+        { kind: 'bar' },
+        { kind: 'ending', value: '2' },
+        { kind: 'chord', value: 'D' },
+        { kind: 'bar' },
+        { kind: 'repeatStart' },
+        { kind: 'chord', value: 'Em' },
+        { kind: 'bar' },
+        { kind: 'repeatEnd' },
+        { kind: 'bar' },
+      ]);
+    });
+
+    it('reports P: fields in the body as parts', () => {
+      const abc = tune('D', 'P:A\n"D"D4|\nP:B\n"G"G4|');
+      expect(chordEvents(abc)).toEqual([
+        { kind: 'part', value: 'A' },
+        { kind: 'chord', value: 'D' },
+        { kind: 'bar' },
+        { kind: 'part', value: 'B' },
+        { kind: 'chord', value: 'G' },
+        { kind: 'bar' },
+      ]);
+    });
+
+    it('ends a last bar without a bar line, with the accidental signs abcjs uses', () => {
+      expect(chordEvents(tune('C', '"Bb/F"C4|"C"c4'))).toEqual([
+        { kind: 'chord', value: 'B♭/F' },
+        { kind: 'bar' },
+        { kind: 'chord', value: 'C' },
+        { kind: 'bar' },
+      ]);
+    });
   });
 });

@@ -1,6 +1,7 @@
 import { useCallback, useRef } from 'react';
 import { HashRouter, Route, Routes } from 'react-router';
 import { NotFound } from '../ui/NotFound';
+import { PlayerSettingsProvider } from '../ui/PlayerSettings';
 import { catalog } from './catalog';
 import { supportedLanguages } from './i18n';
 import { HomeRoute } from './HomeRoute';
@@ -15,20 +16,22 @@ export function App() {
   const wasHomeVisited = useCallback(() => homeVisited.current, []);
 
   return (
-    <HashRouter>
-      <Routes>
-        <Route
-          path="/"
-          element={
-            <HomeRoute languages={supportedLanguages} tunes={catalog} onVisit={markHomeVisited} />
-          }
-        />
-        <Route
-          path="/tune/:tuneId"
-          element={<TuneRoute tunes={catalog} homeVisited={wasHomeVisited} />}
-        />
-        <Route path="*" element={<NotFound homeHref={HOME_HREF} />} />
-      </Routes>
-    </HashRouter>
+    <PlayerSettingsProvider>
+      <HashRouter>
+        <Routes>
+          <Route
+            path="/"
+            element={
+              <HomeRoute languages={supportedLanguages} tunes={catalog} onVisit={markHomeVisited} />
+            }
+          />
+          <Route
+            path="/tune/:tuneId"
+            element={<TuneRoute tunes={catalog} homeVisited={wasHomeVisited} />}
+          />
+          <Route path="*" element={<NotFound homeHref={HOME_HREF} />} />
+        </Routes>
+      </HashRouter>
+    </PlayerSettingsProvider>
   );
 }

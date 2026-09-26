@@ -1,6 +1,7 @@
 import type { ReactNode, Ref } from 'react';
 import { useTranslation } from 'react-i18next';
-import { MoreIcon, PauseIcon, PlayIcon } from './icons';
+import { ChordChartIcon, MoreIcon, NotesChordsIcon, NotesIcon, PauseIcon, PlayIcon } from './icons';
+import type { DisplayMode } from './settings';
 import { iconButtonClass } from './styles';
 import type { PlayerStatus } from './usePlayer';
 
@@ -13,14 +14,24 @@ interface BottomBarProps {
   onPause: () => void;
   moreButton: Ref<HTMLButtonElement>;
   onMore: () => void;
+  /** The display mode shown, which the View button's icon reflects. */
+  displayMode: DisplayMode;
+  viewButton: Ref<HTMLButtonElement>;
+  onView: () => void;
 }
+
+const VIEW_ICONS: Record<DisplayMode, () => React.JSX.Element> = {
+  notes: NotesIcon,
+  notesAndChords: NotesChordsIcon,
+  chordChart: ChordChartIcon,
+};
 
 const primaryButtonClass =
   'inline-flex size-12 shrink-0 items-center justify-center rounded-full bg-amber-700 text-white focus:ring-2 focus:ring-amber-600 focus:ring-offset-2 focus:outline-none disabled:opacity-40 dark:bg-amber-500 dark:text-stone-950';
 
 /**
  * The tune page's controls, fixed to the bottom of the screen within thumb reach: transpose,
- * play and "More". Clears the iPhone home indicator with the safe-area inset.
+ * play, View (display and playback modes) and "More". Clears the iPhone home indicator with the safe-area inset.
  */
 export function BottomBar({
   transposition,
@@ -30,9 +41,13 @@ export function BottomBar({
   onPause,
   moreButton,
   onMore,
+  displayMode,
+  viewButton,
+  onView,
 }: BottomBarProps) {
   const { t } = useTranslation();
   const playing = playerStatus === 'playing';
+  const ViewIcon = VIEW_ICONS[displayMode];
 
   return (
     <div
@@ -57,6 +72,16 @@ export function BottomBar({
           className={primaryButtonClass}
         >
           {playing ? <PauseIcon /> : <PlayIcon />}
+        </button>
+        <button
+          ref={viewButton}
+          type="button"
+          aria-label={t('view.button', { mode: t(`view.display.${displayMode}`) })}
+          aria-haspopup="dialog"
+          onClick={onView}
+          className={iconButtonClass}
+        >
+          <ViewIcon />
         </button>
         <button
           ref={moreButton}

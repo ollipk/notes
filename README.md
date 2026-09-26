@@ -10,7 +10,9 @@ It is built for phones and tablets at group sessions, and runs as a static site 
 
 > Status: early. Search for a tune, then read its sheet music, transpose it to any key and play
 > it back at a slower tempo from the bar at the bottom of the screen. The tune page keeps the
-> screen on, has a full-screen mode for reading and prints cleanly on A4 or Letter.
+> screen on, has a full-screen mode for reading and prints cleanly on A4 or Letter. Accompanists
+> can show the chords with the notes or as a chord chart, play along with an accompaniment, and see
+> guitar capo shapes; the choice is remembered on the device.
 
 ## Quick start
 

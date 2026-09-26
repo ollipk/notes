@@ -1,35 +1,12 @@
-import { useCallback, useState } from 'react';
+import { usePlayerSettings } from './PlayerSettings';
+import { ZOOM_SCALES } from './settings';
 
-/** Notation sizes relative to fit-to-width; the middle one is the default. */
-export const ZOOM_SCALES = [0.75, 0.9, 1, 1.1, 1.25] as const;
-const DEFAULT_LEVEL = 2;
-export const ZOOM_STORAGE_KEY = 'notes.zoom';
-
-function readLevel(): number {
-  try {
-    const stored = localStorage.getItem(ZOOM_STORAGE_KEY);
-    const level = Number(stored);
-    return stored !== null && Number.isInteger(level) && level >= 0 && level < ZOOM_SCALES.length
-      ? level
-      : DEFAULT_LEVEL;
-  } catch {
-    return DEFAULT_LEVEL;
-  }
-}
-
-/** The notation size on this device, remembered in localStorage when it is available. */
+/** The notation size on this device, kept with the other player settings. */
 export function useZoom() {
-  const [level, setLevelState] = useState(readLevel);
-
-  const setLevel = useCallback((next: number) => {
-    const clamped = Math.min(Math.max(next, 0), ZOOM_SCALES.length - 1);
-    setLevelState(clamped);
-    try {
-      localStorage.setItem(ZOOM_STORAGE_KEY, String(clamped));
-    } catch {
-      // Private browsing or storage disabled: the zoom still works for this visit.
-    }
-  }, []);
+  const { settings, update } = usePlayerSettings();
+  const level = settings.zoomLevel;
+  const setLevel = (next: number) =>
+    update({ zoomLevel: Math.min(Math.max(next, 0), ZOOM_SCALES.length - 1) });
 
   return {
     level,

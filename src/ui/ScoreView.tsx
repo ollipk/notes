@@ -1,7 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { AbcAdapterState } from './abc/useAbcAdapter';
-import type { Score } from './abc/types';
 
 /** Used until the container can be measured (and in jsdom, which has no layout). */
 const FALLBACK_WIDTH = 360;
@@ -12,7 +11,7 @@ const RESIZE_DELAY_MS = 150;
  * Widest the score gets at scale 1. Phones are narrower, so the score fits their width; on wider
  * screens the zoom changes how wide the score is drawn.
  */
-const MAX_WIDTH_AT_SCALE_1 = 560;
+export const MAX_WIDTH_AT_SCALE_1 = 560;
 /**
  * Layout width for printing, about the printable width of A4 and Letter at 12 mm margins. The
  * printed score is scaled to the exact page width.
@@ -28,12 +27,13 @@ interface ScoreViewProps {
   scale: number;
   /** Focus mode: fill the available width and height, without the card's frame. */
   maximized?: boolean;
-  onRender: (score: Score) => void;
 }
 
-const cardClass =
+/** The white "paper" the score and the chord chart are drawn on. */
+export const paperCardClass =
   'score-card mx-auto w-full rounded-xl bg-white p-2 text-black shadow-sm ring-1 ring-stone-300 sm:p-4 dark:ring-stone-600';
-const maximizedClass = 'min-h-full w-full bg-white p-2 text-black sm:p-4';
+/** The paper in focus mode: the whole screen, without the card's frame. */
+export const paperMaximizedClass = 'min-h-full w-full bg-white p-2 text-black sm:p-4';
 
 /** The sheet music, on a white "paper" card in light and dark mode so black notation stays readable. */
 export function ScoreView({
@@ -43,7 +43,6 @@ export function ScoreView({
   semitones,
   scale,
   maximized = false,
-  onRender,
 }: ScoreViewProps) {
   const { t } = useTranslation();
   const container = useRef<HTMLDivElement>(null);
@@ -73,7 +72,7 @@ export function ScoreView({
     if (!element || !adapter) return;
     const available = width || element.clientWidth || FALLBACK_WIDTH;
     renderedWidth.current = available;
-    onRender(adapter.renderScore(element, source, { semitones, scale, width: available }));
+    adapter.renderScore(element, source, { semitones, scale, width: available });
 
     // Print the same key and variant at the same size on every device: lay the score out for
     // the printed page, not for the phone it was opened on, and restore it afterwards.
@@ -81,7 +80,7 @@ export function ScoreView({
       adapter.renderScore(element, source, { semitones, scale: 1, width: PRINT_WIDTH });
     };
     const renderForScreen = () => {
-      onRender(adapter.renderScore(element, source, { semitones, scale, width: available }));
+      adapter.renderScore(element, source, { semitones, scale, width: available });
     };
     window.addEventListener('beforeprint', renderForPrint);
     window.addEventListener('afterprint', renderForScreen);
@@ -89,12 +88,12 @@ export function ScoreView({
       window.removeEventListener('beforeprint', renderForPrint);
       window.removeEventListener('afterprint', renderForScreen);
     };
-  }, [adapter, source, semitones, scale, width, onRender]);
+  }, [adapter, source, semitones, scale, width]);
 
   return (
     <div
       style={maximized ? undefined : { maxWidth: MAX_WIDTH_AT_SCALE_1 * scale }}
-      className={maximized ? maximizedClass : cardClass}
+      className={maximized ? paperMaximizedClass : paperCardClass}
     >
       {abc.status === 'loading' && <p className="p-4 text-stone-700">{t('score.loading')}</p>}
       {abc.status === 'error' && (

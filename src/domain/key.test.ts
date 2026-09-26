@@ -7,6 +7,7 @@ import {
   parseKey,
   relativeMajor,
   semitonesToKey,
+  spellPitchClass,
   transposeKey,
   type Key,
   type Mode,
@@ -179,5 +180,37 @@ describe('relativeMajor', () => {
 
   it('is undefined beyond seven accidentals', () => {
     expect(relativeMajor(key('B#lyd'))).toBeUndefined();
+  });
+});
+
+describe('spellPitchClass', () => {
+  const spell = (pc: number, k: string) => {
+    const tonic = spellPitchClass(pc, key(k));
+    return `${tonic.letter}${tonic.accidental === 1 ? '#' : tonic.accidental === -1 ? 'b' : ''}`;
+  };
+
+  it('uses the letters of the key scale', () => {
+    expect([0, 2, 4, 5, 7, 9, 11].map((pc) => spell(pc, 'C'))).toEqual([
+      'C',
+      'D',
+      'E',
+      'F',
+      'G',
+      'A',
+      'B',
+    ]);
+    expect(spell(10, 'F')).toBe('Bb');
+    expect(spell(6, 'D')).toBe('F#');
+    expect(spell(5, 'F#')).toBe('E#');
+    expect(spell(11, 'Gb')).toBe('Cb');
+    expect(spell(3, 'Cm')).toBe('Eb');
+  });
+
+  it('prefers naturals, then the key direction, outside the scale', () => {
+    expect(spell(5, 'D')).toBe('F');
+    expect(spell(1, 'G')).toBe('C#');
+    expect(spell(1, 'Bb')).toBe('Db');
+    expect(spell(6, 'C')).toBe('F#');
+    expect(spell(-2, 'C')).toBe('A#');
   });
 });
