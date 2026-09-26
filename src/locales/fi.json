@@ -42,14 +42,16 @@
     "other": "Muu"
   },
   "tune": {
-    "back": "← Kaikki sävelmät",
+    "back": "Kaikki sävelmät",
     "alsoKnownAs": "Tunnetaan myös nimellä {{titles}}",
     "composer": "Säveltäjä: {{composer}}",
     "origin": "{{country}}, {{region}}",
     "details": "Tietoa nuotinnoksesta",
     "source": "Lähde",
     "transcriber": "Nuotintaja",
-    "notes": "Huomautukset"
+    "notes": "Huomautukset",
+    "more": "Lisää",
+    "controls": "Sävelmän säätimet"
   },
   "variant": {
     "label": "Versio"
@@ -72,7 +74,10 @@
     "currentShifted": "Sävellaji: {{key}} ({{offset}})",
     "down": "Puolisävel alas",
     "up": "Puolisävel ylös",
-    "reset": "Palauta kirjoitettu sävellaji"
+    "reset": "Palauta kirjoitettu sävellaji",
+    "written": "Kirjoitettu sävellaji",
+    "offset_one": "{{offset}} puolisävel",
+    "offset_other": "{{offset}} puolisäveltä"
   },
   "zoom": {
     "label": "Nuottien koko",
@@ -97,5 +102,8 @@
     "heading": "Sävelmää ei löytynyt",
     "message": "Tässä osoitteessa ei ole sävelmää. Se on ehkä nimetty uudelleen tai poistettu.",
     "back": "Takaisin sävelmiin"
+  },
+  "sheet": {
+    "close": "Sulje"
   }
 }

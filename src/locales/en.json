@@ -42,14 +42,16 @@
     "other": "Other"
   },
   "tune": {
-    "back": "← All tunes",
+    "back": "All tunes",
     "alsoKnownAs": "Also known as {{titles}}",
     "composer": "Composer: {{composer}}",
     "origin": "{{country}}, {{region}}",
     "details": "About this transcription",
     "source": "Source",
     "transcriber": "Transcriber",
-    "notes": "Notes"
+    "notes": "Notes",
+    "more": "More",
+    "controls": "Tune controls"
   },
   "variant": {
     "label": "Variant"
@@ -72,7 +74,10 @@
     "currentShifted": "Key: {{key}} ({{offset}})",
     "down": "Down a semitone",
     "up": "Up a semitone",
-    "reset": "Back to the written key"
+    "reset": "Back to the written key",
+    "written": "Written key",
+    "offset_one": "{{offset}} semitone",
+    "offset_other": "{{offset}} semitones"
   },
   "zoom": {
     "label": "Notation size",
@@ -97,5 +102,8 @@
     "heading": "Tune not found",
     "message": "There is no tune at this address. It may have been renamed or removed.",
     "back": "Back to all tunes"
+  },
+  "sheet": {
+    "close": "Close"
   }
 }

@@ -6,6 +6,10 @@ export const controlClass = `${controlBase} px-3`;
 
 export const iconButtonClass = `${controlBase} inline-flex min-w-12 items-center justify-center px-2`;
 
+/** An icon button without a border, e.g. "back" in the header. */
+export const plainIconButtonClass =
+  'inline-flex size-12 shrink-0 items-center justify-center rounded-lg text-stone-900 focus:ring-2 focus:ring-amber-600 focus:outline-none dark:text-stone-100';
+
 export const labelClass = 'text-sm font-medium text-stone-700 dark:text-stone-300';
 
 export const linkClass =

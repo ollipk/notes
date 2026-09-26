@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useSearchParams } from 'react-router';
 import { searchTunes } from '../domain/search';
@@ -14,14 +14,19 @@ import { tuneHref, tunePath } from './routes';
 export function HomeRoute({
   languages,
   tunes,
+  onVisit,
 }: {
   languages: readonly LanguageCode[];
   tunes: readonly Tune[];
+  /** Called when the page is shown, so the tune page knows it can go back to it. */
+  onVisit: () => void;
 }) {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const [params, setParams] = useSearchParams();
   const query = params.get('q') ?? '';
+
+  useEffect(onVisit, [onVisit]);
 
   const results = useMemo(
     () => searchTunes(tunes, query, (type) => t(`tuneType.${type}`)),
