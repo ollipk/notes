@@ -3,6 +3,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import en from '../locales/en.json';
 import fi from '../locales/fi.json';
 import { App } from './App';
+import { catalog } from './catalog';
 import i18n, { LANGUAGE_STORAGE_KEY } from './i18n';
 
 // The tune page loads abcjs lazily; jsdom cannot render it.
@@ -29,18 +30,14 @@ describe('App', () => {
 
     const list = within(screen.getByRole('region', { name: en.catalog.heading })).getByRole('list');
     const items = within(list).getAllByRole('listitem');
-    expect(items.map((item) => item.querySelector('a > span')?.textContent)).toEqual([
-      'Drowsy Maggie',
-      'Greensleeves',
-      'Hårgalåten',
-      'The Kesh',
-    ]);
-    expect(within(items[3] as HTMLElement).getByRole('link')).toHaveAttribute(
-      'href',
-      '#/tune/the-kesh',
-    );
-    expect(items[3]).toHaveTextContent('Jig · Ireland · 2 variants');
-    expect(items[2]).toHaveTextContent('Polska · Sweden · 1 variant');
+    const rowTitle = (item: HTMLElement) => item.querySelector('a > span')?.textContent;
+    const row = (title: string) => items.find((item) => rowTitle(item) === title) as HTMLElement;
+    // Every tune in tunes/, in catalog order. Adding a tune must not break this test.
+    expect(items.length).toBeGreaterThan(0);
+    expect(items.map(rowTitle)).toEqual(catalog.map((tune) => tune.variants[0].titles[0]));
+    expect(within(row('The Kesh')).getByRole('link')).toHaveAttribute('href', '#/tune/the-kesh');
+    expect(row('The Kesh')).toHaveTextContent('Jig · Ireland · 2 variants');
+    expect(row('Hårgalåten')).toHaveTextContent('Polska · Sweden · 1 variant');
   });
 
   it('switches the text when another language is selected', async () => {
@@ -83,7 +80,7 @@ describe('search', () => {
 
     fireEvent.click(screen.getByRole('button', { name: en.search.clear }));
 
-    expect(titles()).toHaveLength(4);
+    expect(titles()).toHaveLength(catalog.length);
     expect(query()).toBeNull();
     expect(searchField()).toHaveFocus();
   });
