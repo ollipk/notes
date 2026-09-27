@@ -1,10 +1,11 @@
 import { act, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import type { ChordEvent } from '@notes/domain';
+import { tuneHasChords, type ChordEvent } from '@notes/domain';
 import en from '../locales/en.json';
 import type { AbcAdapter, Player, Score } from '../ui/abc/types';
 import { SETTINGS_STORAGE_KEY } from '../ui/settings';
 import { App } from './App';
+import { catalog } from './catalog';
 import i18n from './i18n';
 
 // jsdom cannot render abcjs, so the adapter is replaced with a fake that records its calls.
@@ -323,7 +324,12 @@ describe('chords', () => {
     const withBadge = rows
       .filter((row) => within(row).queryByText(en.search.chordsBadge))
       .map((row) => row.querySelector('a > span')?.textContent);
-    expect(withBadge).toEqual(['Drowsy Maggie', 'Greensleeves', 'Hårgalåten', 'The Kesh']);
-    expect(rows).toHaveLength(5);
+    // The mocked catalog: every tune in tunes/ plus the melody-only tune.
+    expect(withBadge).toEqual(
+      catalog.filter(tuneHasChords).map((tune) => tune.variants[0].titles[0]),
+    );
+    expect(withBadge).toContain('The Kesh');
+    expect(withBadge).not.toContain('Plain Melody');
+    expect(rows).toHaveLength(catalog.length);
   });
 });
